@@ -201,10 +201,10 @@ def datastore_run_triggers(context, data_dict):
     return results.rowcount
 
 
-def datastore_upsert(context, data_dict):
+def timeseries_upsert(context, data_dict):
     '''Updates or inserts into a table in the DataStore
 
-    The datastore_upsert API action allows you to add or edit records to
+    The timeseries_upsert API action allows you to add or edit records to
     an existing DataStore resource. In order for the *upsert* and *update*
     methods to work, a unique key has to be defined via the timeseries_create
     action. The available methods are:
@@ -240,7 +240,7 @@ def datastore_upsert(context, data_dict):
 
     '''
     backend = DatastoreBackend.get_active_backend()
-    schema = context.get('schema', dsschema.datastore_upsert_schema())
+    schema = context.get('schema', dsschema.timeseries_upsert_schema())
     records = data_dict.pop('records', None)
     data_dict, errors = _validate(data_dict, schema, context)
     if records:
@@ -248,7 +248,7 @@ def datastore_upsert(context, data_dict):
     if errors:
         raise p.toolkit.ValidationError(errors)
 
-    p.toolkit.check_access('datastore_upsert', context, data_dict)
+    p.toolkit.check_access('timeseries_upsert', context, data_dict)
 
     resource_id = data_dict['resource_id']
 
@@ -316,7 +316,7 @@ def datastore_delete(context, data_dict):
     :rtype: dictionary
 
     '''
-    schema = context.get('schema', dsschema.datastore_upsert_schema())
+    schema = context.get('schema', dsschema.timeseries_upsert_schema())
     backend = DatastoreBackend.get_active_backend()
 
     # Remove any applied filters before running validation.
@@ -374,10 +374,10 @@ def datastore_delete(context, data_dict):
 
 
 @logic.side_effect_free
-def datastore_search(context, data_dict):
+def timeseries_search(context, data_dict):
     '''Search a DataStore resource.
 
-    The datastore_search action allows you to search data in a resource.
+    The timeseries_search action allows you to search data in a resource.
     DataStore resources that belong to private CKAN resource can only be
     read by you if you have access to the CKAN resource and send the
     appropriate authorization.
@@ -449,7 +449,7 @@ def datastore_search(context, data_dict):
 
     '''
     backend = DatastoreBackend.get_active_backend()
-    schema = context.get('schema', dsschema.datastore_search_schema())
+    schema = context.get('schema', dsschema.timeseries_search_schema())
     data_dict, errors = _validate(data_dict, schema, context)
     if errors:
         raise p.toolkit.ValidationError(errors)
@@ -470,7 +470,7 @@ def datastore_search(context, data_dict):
         if real_id:
             data_dict['resource_id'] = real_id
 
-        p.toolkit.check_access('datastore_search', context, data_dict)
+        p.toolkit.check_access('timeseries_search', context, data_dict)
 
     result = backend.search(context, data_dict)
     result.pop('id', None)
@@ -482,10 +482,10 @@ def datastore_search(context, data_dict):
 
 
 @logic.side_effect_free
-def datastore_search_sql(context, data_dict):
+def timeseries_search_sql(context, data_dict):
     '''Execute SQL queries on the DataStore.
 
-    The datastore_search_sql action allows a user to search data in a resource
+    The timeseries_search_sql action allows a user to search data in a resource
     or connect multiple resources with join expressions. The underlying SQL
     engine is the
     `PostgreSQL engine <http://www.postgresql.org/docs/9.1/interactive/>`_.
@@ -524,7 +524,7 @@ def datastore_search_sql(context, data_dict):
         :type table_names: list strings
         '''
         p.toolkit.check_access(
-            'datastore_search_sql',
+            'timeseries_search_sql',
             dict(context, table_names=table_names),
             data_dict)
 

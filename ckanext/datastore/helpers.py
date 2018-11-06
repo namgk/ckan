@@ -183,7 +183,7 @@ def datastore_dictionary(resource_id):
     """
     try:
         return [
-            f for f in get_action('datastore_search')(
+            f for f in get_action('timeseries_search')(
                 None, {
                     u'resource_id': resource_id,
                     u'limit': 0,

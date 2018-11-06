@@ -203,7 +203,7 @@ def datastore_job(res_id, value):
     }
 
     with app.flask_app.test_request_context():
-        helpers.call_action('datastore_upsert', **data)
+        helpers.call_action('timeseries_upsert', **data)
 
 
 class TestBackgroundJobs(helpers.RQTestBase, DatastoreFunctionalTestBase):
@@ -230,5 +230,5 @@ class TestBackgroundJobs(helpers.RQTestBase, DatastoreFunctionalTestBase):
         jobs.Worker().work(burst=True)
         # Aside from ensuring that the job succeeded, this also checks
         # that accessing the Datastore still works in the main process.
-        result = helpers.call_action('datastore_search', resource_id=res_id)
+        result = helpers.call_action('timeseries_search', resource_id=res_id)
         assert_equal([0, 1, 2], [r['value'] for r in result['records']])

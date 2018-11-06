@@ -1141,7 +1141,7 @@ def upsert_data(context, data_dict):
                 )
                 try:
                     results = context['connection'].execute(
-                        sql_string, used_values + unique_values)
+                        sql_string, used_values + ['', datastore_helpers.utcnow()] +  unique_values)
                 except sqlalchemy.exc.DatabaseError as err:
                     raise ValidationError({
                         u'records': [_programming_error_summary(err)],
@@ -1175,10 +1175,15 @@ def upsert_data(context, data_dict):
                     primary_value=u','.join(["%s"] * len(unique_keys))
                 )
                 try:
+                    print 'ahffere'
+                    print sql_string
+                    print used_values
+                    print unique_values
                     context['connection'].execute(
                         sql_string,
-                        (used_values + unique_values) * 2)
+                        (used_values+ ['', datastore_helpers.utcnow()] + unique_values) * 2)
                 except sqlalchemy.exc.DatabaseError as err:
+                    print err
                     raise ValidationError({
                         u'records': [_programming_error_summary(err)],
                         u'_records_row': num})
@@ -1197,7 +1202,7 @@ def validate(context, data_dict):
         fields = datastore_helpers.get_list(data_dict_copy['sort'], False)
         data_dict_copy['sort'] = fields
 
-    for plugin in plugins.PluginImplementations(interfaces.IDatastore):
+    for plugin in plugins.PluginImplementations(interfaces.ITimeseries):
         data_dict_copy = plugin.datastore_validate(context,
                                                    data_dict_copy,
                                                    fields_types)
@@ -1239,8 +1244,8 @@ def search_data(context, data_dict):
         'where': []
     }
 
-    for plugin in p.PluginImplementations(interfaces.IDatastore):
-        query_dict = plugin.datastore_search(context, data_dict,
+    for plugin in p.PluginImplementations(interfaces.ITimeseries):
+        query_dict = plugin.timeseries_search(context, data_dict,
                                              fields_types, query_dict)
 
     where_clause, where_values = _where(query_dict['where'])
@@ -1387,7 +1392,7 @@ def delete_data(context, data_dict):
         'where': []
     }
 
-    for plugin in plugins.PluginImplementations(interfaces.IDatastore):
+    for plugin in plugins.PluginImplementations(interfaces.ITimeseries):
         query_dict = plugin.datastore_delete(context, data_dict,
                                              fields_types, query_dict)
 
@@ -1667,7 +1672,7 @@ class DatastorePostgresqlBackend(DatastoreBackend):
             error_msg = 'ckan.datastore.read_url not found in config'
             raise DatastoreException(error_msg)
 
-        # Check whether users have disabled datastore_search_sql
+        # Check whether users have disabled timeseries_search_sql
         self.enable_sql_search = toolkit.asbool(
             self.config.get('ckan.datastore.sqlsearch.enabled', True))
 
@@ -1701,7 +1706,7 @@ class DatastorePostgresqlBackend(DatastoreBackend):
         query_dict['where'] += _where_clauses(data_dict, fields_types)
         return query_dict
 
-    def datastore_search(self, context, data_dict, fields_types, query_dict):
+    def timeseries_search(self, context, data_dict, fields_types, query_dict):
 
         fields = data_dict.get('fields')
 

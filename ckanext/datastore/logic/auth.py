@@ -33,7 +33,7 @@ def timeseries_create(context, data_dict):
     return datastore_auth(context, data_dict, privilege=privilege)
 
 
-def datastore_upsert(context, data_dict):
+def timeseries_upsert(context, data_dict):
     return datastore_auth(context, data_dict)
 
 
@@ -47,12 +47,12 @@ def datastore_info(context, data_dict):
 
 
 @p.toolkit.auth_allow_anonymous_access
-def datastore_search(context, data_dict):
+def timeseries_search(context, data_dict):
     return datastore_auth(context, data_dict, 'resource_show')
 
 
 @p.toolkit.auth_allow_anonymous_access
-def datastore_search_sql(context, data_dict):
+def timeseries_search_sql(context, data_dict):
     '''need access to view all tables in query'''
 
     for name in context['table_names']:

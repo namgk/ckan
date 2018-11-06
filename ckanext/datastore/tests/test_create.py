@@ -1052,7 +1052,7 @@ class TestDatastoreCreateTriggers(DatastoreFunctionalTestBase):
                 triggers=[{u'function': u'spamify_trigger'}])
         assert_equal(
             helpers.call_action(
-                u'datastore_search',
+                u'timeseries_search',
                 fields=[u'spam'],
                 resource_id=res['resource_id'])['records'],
             [
@@ -1080,13 +1080,13 @@ class TestDatastoreCreateTriggers(DatastoreFunctionalTestBase):
                 fields=[{u'id': u'spam', u'type': u'text'}],
                 triggers=[{u'function': u'more_spam_trigger'}])
             helpers.call_action(
-                u'datastore_upsert',
+                u'timeseries_upsert',
                 method=u'insert',
                 resource_id=res['resource_id'],
                 records=[{u'spam': u'BEANS'}, {u'spam': u'SPAM'}])
         assert_equal(
             helpers.call_action(
-                u'datastore_search',
+                u'timeseries_search',
                 fields=[u'spam'],
                 resource_id=res['resource_id'])['records'],
             [
@@ -1147,7 +1147,7 @@ class TestDatastoreCreateTriggers(DatastoreFunctionalTestBase):
                 triggers=[{u'function': u'spamonly_trigger'}])
             try:
                 helpers.call_action(
-                    u'datastore_upsert',
+                    u'timeseries_upsert',
                     method=u'insert',
                     resource_id=res['resource_id'],
                     records=[{u'spam': u'spam'}, {u'spam': u'BEANS'}])

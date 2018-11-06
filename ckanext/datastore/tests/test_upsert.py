@@ -43,7 +43,7 @@ class TestDatastoreUpsertNewTests(DatastoreFunctionalTestBase):
                  'book': {'code': 'A', 'title': u'ñ'},
                  'author': 'tolstoy'}],
         }
-        helpers.call_action('datastore_upsert', **data)
+        helpers.call_action('timeseries_upsert', **data)
 
     def test_upsert_doesnt_crash_with_json_field_with_string_value(self):
         resource = factories.Resource()
@@ -65,7 +65,7 @@ class TestDatastoreUpsertNewTests(DatastoreFunctionalTestBase):
                  'book': u'ñ',
                  'author': 'tolstoy'}],
         }
-        helpers.call_action('datastore_upsert', **data)
+        helpers.call_action('timeseries_upsert', **data)
 
 
 class TestDatastoreUpsert(DatastoreLegacyTestBase):
@@ -111,7 +111,7 @@ class TestDatastoreUpsert(DatastoreLegacyTestBase):
             'resource_id': self.data['resource_id']
         }
         postparams = '%s=1' % json.dumps(data)
-        res = self.app.post('/api/action/datastore_upsert', params=postparams,
+        res = self.app.post('/api/action/timeseries_upsert', params=postparams,
                             status=403)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is False
@@ -119,7 +119,7 @@ class TestDatastoreUpsert(DatastoreLegacyTestBase):
     def test_upsert_empty_fails(self):
         postparams = '%s=1' % json.dumps({})
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_upsert', params=postparams,
+        res = self.app.post('/api/action/timeseries_upsert', params=postparams,
                             extra_environ=auth, status=409)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is False
@@ -145,7 +145,7 @@ class TestDatastoreUpsert(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_upsert', params=postparams,
+        res = self.app.post('/api/action/timeseries_upsert', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
 
@@ -176,7 +176,7 @@ class TestDatastoreUpsert(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_upsert', params=postparams,
+        res = self.app.post('/api/action/timeseries_upsert', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
 
@@ -201,7 +201,7 @@ class TestDatastoreUpsert(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_upsert', params=postparams,
+        res = self.app.post('/api/action/timeseries_upsert', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
 
@@ -225,7 +225,7 @@ class TestDatastoreUpsert(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_upsert', params=postparams,
+        res = self.app.post('/api/action/timeseries_upsert', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
 
@@ -249,7 +249,7 @@ class TestDatastoreUpsert(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_upsert', params=postparams,
+        res = self.app.post('/api/action/timeseries_upsert', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
 
@@ -264,7 +264,7 @@ class TestDatastoreUpsert(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_upsert', params=postparams,
+        res = self.app.post('/api/action/timeseries_upsert', params=postparams,
                             extra_environ=auth, status=409)
         res_dict = json.loads(res.body)
 
@@ -279,7 +279,7 @@ class TestDatastoreUpsert(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_upsert', params=postparams,
+        res = self.app.post('/api/action/timeseries_upsert', params=postparams,
                             extra_environ=auth, status=409)
         res_dict = json.loads(res.body)
 
@@ -298,7 +298,7 @@ class TestDatastoreUpsert(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_upsert', params=postparams,
+        res = self.app.post('/api/action/timeseries_upsert', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is True, res_dict
@@ -360,7 +360,7 @@ class TestDatastoreInsert(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_upsert', params=postparams,
+        res = self.app.post('/api/action/timeseries_upsert', params=postparams,
                             extra_environ=auth, status=409)
         res_dict = json.loads(res.body)
 
@@ -375,7 +375,7 @@ class TestDatastoreInsert(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_upsert', params=postparams,
+        res = self.app.post('/api/action/timeseries_upsert', params=postparams,
                             extra_environ=auth, status=409)
         res_dict = json.loads(res.body)
 
@@ -395,7 +395,7 @@ class TestDatastoreInsert(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_upsert', params=postparams,
+        res = self.app.post('/api/action/timeseries_upsert', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
 
@@ -470,8 +470,11 @@ class TestDatastoreUpdate(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_upsert', params=postparams,
+        res = self.app.post('/api/action/timeseries_upsert', params=postparams,
                             extra_environ=auth)
+        
+        print res
+
         res_dict = json.loads(res.body)
 
         assert res_dict['success'] is True
@@ -499,7 +502,7 @@ class TestDatastoreUpdate(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_upsert', params=postparams,
+        res = self.app.post('/api/action/timeseries_upsert', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
 
@@ -524,7 +527,7 @@ class TestDatastoreUpdate(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_upsert', params=postparams,
+        res = self.app.post('/api/action/timeseries_upsert', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
 
@@ -549,7 +552,7 @@ class TestDatastoreUpdate(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_upsert', params=postparams,
+        res = self.app.post('/api/action/timeseries_upsert', params=postparams,
                             extra_environ=auth, status=409)
         res_dict = json.loads(res.body)
 
@@ -564,7 +567,7 @@ class TestDatastoreUpdate(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_upsert', params=postparams,
+        res = self.app.post('/api/action/timeseries_upsert', params=postparams,
                             extra_environ=auth, status=409)
         res_dict = json.loads(res.body)
 
@@ -579,7 +582,7 @@ class TestDatastoreUpdate(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_upsert', params=postparams,
+        res = self.app.post('/api/action/timeseries_upsert', params=postparams,
                             extra_environ=auth, status=409)
         res_dict = json.loads(res.body)
 

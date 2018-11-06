@@ -45,7 +45,7 @@ class TestDatastoreSearchNewTest(DatastoreFunctionalTestBase):
                 'from': 'Brazil'
             },
         }
-        result = helpers.call_action('datastore_search', **search_data)
+        result = helpers.call_action('timeseries_search', **search_data)
         ranks = [r['rank from'] for r in result['records']]
         assert_equals(len(result['records']), 2)
         assert_equals(len(set(ranks)), 1)
@@ -70,7 +70,7 @@ class TestDatastoreSearchNewTest(DatastoreFunctionalTestBase):
                 'year': '20:*'
             },
         }
-        result = helpers.call_action('datastore_search', **search_data)
+        result = helpers.call_action('timeseries_search', **search_data)
         assert_equals(len(result['records']), 1)
         assert_equals(result['records'][0]['year'], {'foo': 2014})
 
@@ -96,7 +96,7 @@ class TestDatastoreSearchNewTest(DatastoreFunctionalTestBase):
                 'the year': '2013'
             },
         }
-        result = helpers.call_action('datastore_search', **search_data)
+        result = helpers.call_action('timeseries_search', **search_data)
         result_years = [r['the year'] for r in result['records']]
         assert_equals(result_years, [2013])
 
@@ -167,7 +167,7 @@ class TestDatastoreSearch(DatastoreLegacyTestBase):
         data = {'resource_id': self.data['resource_id']}
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.normal_user.apikey)}
-        res = self.app.post('/api/action/datastore_search', params=postparams,
+        res = self.app.post('/api/action/timeseries_search', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is True
@@ -179,7 +179,7 @@ class TestDatastoreSearch(DatastoreLegacyTestBase):
         data = {'id': self.data['resource_id']}
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.normal_user.apikey)}
-        res = self.app.post('/api/action/datastore_search', params=postparams,
+        res = self.app.post('/api/action/timeseries_search', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is True
@@ -220,7 +220,7 @@ class TestDatastoreSearch(DatastoreLegacyTestBase):
         data = {'resource_id': resource['id']}
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.normal_user.apikey)}
-        res = self.app.post('/api/action/datastore_search', params=postparams,
+        res = self.app.post('/api/action/timeseries_search', params=postparams,
                             extra_environ=auth, status=403)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is False
@@ -229,7 +229,7 @@ class TestDatastoreSearch(DatastoreLegacyTestBase):
         data = {'resource_id': self.data['aliases']}
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.normal_user.apikey)}
-        res = self.app.post('/api/action/datastore_search', params=postparams,
+        res = self.app.post('/api/action/timeseries_search', params=postparams,
                             extra_environ=auth)
         res_dict_alias = json.loads(res.body)
         result = res_dict_alias['result']
@@ -241,7 +241,7 @@ class TestDatastoreSearch(DatastoreLegacyTestBase):
                 'fields': [{'id': 'bad'}]}
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.normal_user.apikey)}
-        res = self.app.post('/api/action/datastore_search', params=postparams,
+        res = self.app.post('/api/action/timeseries_search', params=postparams,
                             extra_environ=auth, status=409)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is False
@@ -251,7 +251,7 @@ class TestDatastoreSearch(DatastoreLegacyTestBase):
                 'fields': [u'b\xfck']}
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.normal_user.apikey)}
-        res = self.app.post('/api/action/datastore_search', params=postparams,
+        res = self.app.post('/api/action/timeseries_search', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is True
@@ -264,7 +264,7 @@ class TestDatastoreSearch(DatastoreLegacyTestBase):
                 'fields': u'b\xfck, author'}
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.normal_user.apikey)}
-        res = self.app.post('/api/action/datastore_search', params=postparams,
+        res = self.app.post('/api/action/timeseries_search', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is True
@@ -279,7 +279,7 @@ class TestDatastoreSearch(DatastoreLegacyTestBase):
                 'distinct': True}
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.normal_user.apikey)}
-        res = self.app.post('/api/action/datastore_search', params=postparams,
+        res = self.app.post('/api/action/timeseries_search', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is True
@@ -292,7 +292,7 @@ class TestDatastoreSearch(DatastoreLegacyTestBase):
                 'filters': {u'b\xfck': 'annakarenina'}}
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.normal_user.apikey)}
-        res = self.app.post('/api/action/datastore_search', params=postparams,
+        res = self.app.post('/api/action/timeseries_search', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is True
@@ -305,7 +305,7 @@ class TestDatastoreSearch(DatastoreLegacyTestBase):
                 'filters': {u'characters': [u'Princess Anna', u'Sergius']}}
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.normal_user.apikey)}
-        res = self.app.post('/api/action/datastore_search', params=postparams,
+        res = self.app.post('/api/action/timeseries_search', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is True
@@ -320,7 +320,7 @@ class TestDatastoreSearch(DatastoreLegacyTestBase):
                 }}
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.normal_user.apikey)}
-        res = self.app.post('/api/action/datastore_search', params=postparams,
+        res = self.app.post('/api/action/timeseries_search', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is True
@@ -333,7 +333,7 @@ class TestDatastoreSearch(DatastoreLegacyTestBase):
                 'filters': {u'b\xfck': [u'annakarenina', u'warandpeace']}}
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.normal_user.apikey)}
-        res = self.app.post('/api/action/datastore_search', params=postparams,
+        res = self.app.post('/api/action/timeseries_search', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is True
@@ -343,7 +343,7 @@ class TestDatastoreSearch(DatastoreLegacyTestBase):
 
     def test_search_filters_get(self):
         filters = {u'b\xfck': 'annakarenina'}
-        res = self.app.get('/api/action/datastore_search?resource_id={0}&filters={1}'.format(
+        res = self.app.get('/api/action/timeseries_search?resource_id={0}&filters={1}'.format(
                     self.data['resource_id'], json.dumps(filters)))
         res_dict = json.loads(res.body)
         assert res_dict['success'] is True
@@ -357,7 +357,7 @@ class TestDatastoreSearch(DatastoreLegacyTestBase):
                 'filters': {u'author': 42}}
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_search', params=postparams,
+        res = self.app.post('/api/action/timeseries_search', params=postparams,
                             extra_environ=auth, status=409)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is False
@@ -367,7 +367,7 @@ class TestDatastoreSearch(DatastoreLegacyTestBase):
                 'sort': u'b\xfck asc, author desc'}
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.normal_user.apikey)}
-        res = self.app.post('/api/action/datastore_search', params=postparams,
+        res = self.app.post('/api/action/timeseries_search', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is True
@@ -379,7 +379,7 @@ class TestDatastoreSearch(DatastoreLegacyTestBase):
         data = {'resource_id': self.data['resource_id'],
                 'sort': [u'b\xfck desc', '"author" asc']}
         postparams = '%s=1' % json.dumps(data)
-        res = self.app.post('/api/action/datastore_search', params=postparams,
+        res = self.app.post('/api/action/timeseries_search', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is True
@@ -393,7 +393,7 @@ class TestDatastoreSearch(DatastoreLegacyTestBase):
                 'sort': u'f\xfc\xfc asc'}
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_search', params=postparams,
+        res = self.app.post('/api/action/timeseries_search', params=postparams,
                             extra_environ=auth, status=409)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is False
@@ -406,7 +406,7 @@ class TestDatastoreSearch(DatastoreLegacyTestBase):
                 'limit': 1}
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.normal_user.apikey)}
-        res = self.app.post('/api/action/datastore_search', params=postparams,
+        res = self.app.post('/api/action/timeseries_search', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is True
@@ -419,7 +419,7 @@ class TestDatastoreSearch(DatastoreLegacyTestBase):
                 'limit': 'bad'}
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.normal_user.apikey)}
-        res = self.app.post('/api/action/datastore_search', params=postparams,
+        res = self.app.post('/api/action/timeseries_search', params=postparams,
                             extra_environ=auth, status=409)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is False
@@ -428,7 +428,7 @@ class TestDatastoreSearch(DatastoreLegacyTestBase):
                 'limit': -1}
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.normal_user.apikey)}
-        res = self.app.post('/api/action/datastore_search', params=postparams,
+        res = self.app.post('/api/action/timeseries_search', params=postparams,
                             extra_environ=auth, status=409)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is False
@@ -439,7 +439,7 @@ class TestDatastoreSearch(DatastoreLegacyTestBase):
                 'offset': 1}
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.normal_user.apikey)}
-        res = self.app.post('/api/action/datastore_search', params=postparams,
+        res = self.app.post('/api/action/timeseries_search', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is True
@@ -452,7 +452,7 @@ class TestDatastoreSearch(DatastoreLegacyTestBase):
                 'offset': 'bad'}
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.normal_user.apikey)}
-        res = self.app.post('/api/action/datastore_search', params=postparams,
+        res = self.app.post('/api/action/timeseries_search', params=postparams,
                             extra_environ=auth, status=409)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is False
@@ -461,7 +461,7 @@ class TestDatastoreSearch(DatastoreLegacyTestBase):
                 'offset': -1}
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.normal_user.apikey)}
-        res = self.app.post('/api/action/datastore_search', params=postparams,
+        res = self.app.post('/api/action/timeseries_search', params=postparams,
                             extra_environ=auth, status=409)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is False
@@ -472,7 +472,7 @@ class TestDatastoreSearch(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.normal_user.apikey)}
-        res = self.app.post('/api/action/datastore_search', params=postparams,
+        res = self.app.post('/api/action/timeseries_search', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is True
@@ -487,7 +487,7 @@ class TestDatastoreSearch(DatastoreLegacyTestBase):
         data = {'resource_id': self.data['resource_id'],
                 'q': 'tolstoy'}
         postparams = '%s=1' % json.dumps(data)
-        res = self.app.post('/api/action/datastore_search', params=postparams,
+        res = self.app.post('/api/action/timeseries_search', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is True
@@ -513,7 +513,7 @@ class TestDatastoreSearch(DatastoreLegacyTestBase):
                 'plain': True,
                 'q': 'tolstoy annakarenina'}
         postparams = '%s=1' % json.dumps(data)
-        res = self.app.post('/api/action/datastore_search', params=postparams,
+        res = self.app.post('/api/action/timeseries_search', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is True
@@ -535,7 +535,7 @@ class TestDatastoreSearch(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.normal_user.apikey)}
-        res = self.app.post('/api/action/datastore_search', params=postparams,
+        res = self.app.post('/api/action/timeseries_search', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is True
@@ -550,7 +550,7 @@ class TestDatastoreSearch(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.normal_user.apikey)}
-        res = self.app.post('/api/action/datastore_search', params=postparams,
+        res = self.app.post('/api/action/timeseries_search', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is True
@@ -565,7 +565,7 @@ class TestDatastoreSearch(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.normal_user.apikey)}
-        res = self.app.post('/api/action/datastore_search', params=postparams,
+        res = self.app.post('/api/action/timeseries_search', params=postparams,
                             extra_environ=auth, status=409)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is False
@@ -577,7 +577,7 @@ class TestDatastoreSearch(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.normal_user.apikey)}
-        res = self.app.post('/api/action/datastore_search', params=postparams,
+        res = self.app.post('/api/action/timeseries_search', params=postparams,
                             extra_environ=auth, status=409)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is False
@@ -586,7 +586,7 @@ class TestDatastoreSearch(DatastoreLegacyTestBase):
         data = {'resource_id': "_table_metadata"}
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.normal_user.apikey)}
-        res = self.app.post('/api/action/datastore_search', params=postparams,
+        res = self.app.post('/api/action/timeseries_search', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is True
@@ -598,7 +598,7 @@ class TestDatastoreSearch(DatastoreLegacyTestBase):
         }
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.normal_user.apikey)}
-        res = self.app.post('/api/action/datastore_search', params=postparams,
+        res = self.app.post('/api/action/timeseries_search', params=postparams,
                             extra_environ=auth, status=409)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is False
@@ -613,7 +613,7 @@ class TestDatastoreSearch(DatastoreLegacyTestBase):
         }
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.normal_user.apikey)}
-        res = self.app.post('/api/action/datastore_search', params=postparams,
+        res = self.app.post('/api/action/timeseries_search', params=postparams,
                             extra_environ=auth, status=409)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is False
@@ -628,7 +628,7 @@ class TestDatastoreSearch(DatastoreLegacyTestBase):
         }
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.normal_user.apikey)}
-        res = self.app.post('/api/action/datastore_search', params=postparams,
+        res = self.app.post('/api/action/timeseries_search', params=postparams,
                             extra_environ=auth, status=409)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is False
@@ -679,7 +679,7 @@ class TestDatastoreFullTextSearch(DatastoreLegacyTestBase):
                 'q': 'DE'}
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.normal_user.apikey)}
-        res = self.app.post('/api/action/datastore_search', params=postparams,
+        res = self.app.post('/api/action/timeseries_search', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
         assert res_dict['result']['total'] == 2, pprint.pformat(res_dict)
@@ -690,7 +690,7 @@ class TestDatastoreFullTextSearch(DatastoreLegacyTestBase):
                 'q': 'DE | UK'}
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.normal_user.apikey)}
-        res = self.app.post('/api/action/datastore_search', params=postparams,
+        res = self.app.post('/api/action/timeseries_search', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
         assert res_dict['result']['total'] == 5, pprint.pformat(res_dict)
@@ -700,7 +700,7 @@ class TestDatastoreFullTextSearch(DatastoreLegacyTestBase):
                 'q': '99'}
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.normal_user.apikey)}
-        res = self.app.post('/api/action/datastore_search', params=postparams,
+        res = self.app.post('/api/action/timeseries_search', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
         assert res_dict['result']['total'] == 1, pprint.pformat(res_dict)
@@ -710,7 +710,7 @@ class TestDatastoreFullTextSearch(DatastoreLegacyTestBase):
                 'q': '4'}
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.normal_user.apikey)}
-        res = self.app.post('/api/action/datastore_search', params=postparams,
+        res = self.app.post('/api/action/timeseries_search', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
         assert res_dict['result']['total'] == 3, pprint.pformat(res_dict)
@@ -720,7 +720,7 @@ class TestDatastoreFullTextSearch(DatastoreLegacyTestBase):
                 'q': '53.56'}
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.normal_user.apikey)}
-        res = self.app.post('/api/action/datastore_search', params=postparams,
+        res = self.app.post('/api/action/timeseries_search', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
         assert res_dict['result']['total'] == 1, pprint.pformat(res_dict)
@@ -730,7 +730,7 @@ class TestDatastoreFullTextSearch(DatastoreLegacyTestBase):
                 'q': '52.56'}
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.normal_user.apikey)}
-        res = self.app.post('/api/action/datastore_search', params=postparams,
+        res = self.app.post('/api/action/timeseries_search', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
         assert res_dict['result']['total'] == 1, pprint.pformat(res_dict)
@@ -740,7 +740,7 @@ class TestDatastoreFullTextSearch(DatastoreLegacyTestBase):
                 'q': '2011-01-01'}
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.normal_user.apikey)}
-        res = self.app.post('/api/action/datastore_search', params=postparams,
+        res = self.app.post('/api/action/timeseries_search', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
         assert res_dict['result']['total'] == 1, pprint.pformat(res_dict)
@@ -750,7 +750,7 @@ class TestDatastoreFullTextSearch(DatastoreLegacyTestBase):
                 'q': '"{}"'}
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.normal_user.apikey)}
-        res = self.app.post('/api/action/datastore_search', params=postparams,
+        res = self.app.post('/api/action/timeseries_search', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
         assert res_dict['success'], pprint.pformat(res_dict)
@@ -820,18 +820,18 @@ class TestDatastoreSQL(DatastoreLegacyTestBase):
     def test_validates_sql_has_a_single_statement(self):
         sql = 'SELECT * FROM public."{0}"; SELECT * FROM public."{0}";'.format(self.data['resource_id'])
         assert_raises(p.toolkit.ValidationError,
-                      helpers.call_action, 'datastore_search_sql', sql=sql)
+                      helpers.call_action, 'timeseries_search_sql', sql=sql)
 
     def test_works_with_semicolons_inside_strings(self):
         sql = 'SELECT * FROM public."{0}" WHERE "author" = \'foo; bar\''.format(self.data['resource_id'])
-        helpers.call_action('datastore_search_sql', sql=sql)
+        helpers.call_action('timeseries_search_sql', sql=sql)
 
     def test_invalid_statement(self):
         query = 'SELECT ** FROM foobar'
         data = {'sql': query}
         postparams = json.dumps(data)
         auth = {'Authorization': str(self.normal_user.apikey)}
-        res = self.app.post('/api/action/datastore_search_sql', params=postparams,
+        res = self.app.post('/api/action/timeseries_search_sql', params=postparams,
                             extra_environ=auth, status=409)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is False
@@ -841,7 +841,7 @@ class TestDatastoreSQL(DatastoreLegacyTestBase):
         data = {'sql': query}
         postparams = json.dumps(data)
         auth = {'Authorization': str(self.normal_user.apikey)}
-        res = self.app.post('/api/action/datastore_search_sql', params=postparams,
+        res = self.app.post('/api/action/timeseries_search_sql', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is True
@@ -861,7 +861,7 @@ class TestDatastoreSQL(DatastoreLegacyTestBase):
         query = 'SELECT * FROM "{0}"'.format(self.data['aliases'])
         data = {'sql': query}
         postparams = json.dumps(data)
-        res = self.app.post('/api/action/datastore_search_sql', params=postparams,
+        res = self.app.post('/api/action/timeseries_search_sql', params=postparams,
                             extra_environ=auth)
         res_dict_alias = json.loads(res.body)
 
@@ -872,7 +872,7 @@ class TestDatastoreSQL(DatastoreLegacyTestBase):
         data = {'sql': query}
         postparams = json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_search_sql', params=postparams,
+        res = self.app.post('/api/action/timeseries_search_sql', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is True
@@ -898,7 +898,7 @@ class TestDatastoreSQL(DatastoreLegacyTestBase):
             '''.format(self.data['resource_id'])
         data = urllib.urlencode({'sql': query})
         auth = {'Authorization': str(self.normal_user.apikey)}
-        res = self.app.post('/api/action/datastore_search_sql', params=data,
+        res = self.app.post('/api/action/timeseries_search_sql', params=data,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is True
@@ -941,7 +941,7 @@ class TestDatastoreSQL(DatastoreLegacyTestBase):
         data = {'sql': query}
         postparams = json.dumps(data)
         auth = {'Authorization': str(self.normal_user.apikey)}
-        res = self.app.post('/api/action/datastore_search_sql', params=postparams,
+        res = self.app.post('/api/action/timeseries_search_sql', params=postparams,
                             extra_environ=auth, status=403)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is False
@@ -960,7 +960,7 @@ class TestDatastoreSQL(DatastoreLegacyTestBase):
         for query in test_cases:
             data = {'sql': query.replace('\n', '')}
             postparams = urllib.urlencode(data)
-            res = self.app.post('/api/action/datastore_search_sql',
+            res = self.app.post('/api/action/timeseries_search_sql',
                                 params=postparams,
                                 status=403)
             res_dict = json.loads(res.body)
@@ -1002,36 +1002,36 @@ class TestDatastoreSQLFunctional(DatastoreFunctionalTestBase):
         assert_raises(
             p.toolkit.NotAuthorized,
             helpers.call_action,
-            'datastore_search_sql',
+            'timeseries_search_sql',
             context=ctx2,
             sql=sql1)
         assert_raises(
             p.toolkit.NotAuthorized,
             helpers.call_action,
-            'datastore_search_sql',
+            'timeseries_search_sql',
             context=ctx1,
             sql=sql2)
         assert_raises(
             p.toolkit.NotAuthorized,
             helpers.call_action,
-            'datastore_search_sql',
+            'timeseries_search_sql',
             context=ctx1,
             sql=sql3)
         assert_raises(
             p.toolkit.NotAuthorized,
             helpers.call_action,
-            'datastore_search_sql',
+            'timeseries_search_sql',
             context=ctx2,
             sql=sql3)
         helpers.call_action(
-            'datastore_search_sql',
+            'timeseries_search_sql',
             context=ctx1,
             sql=sql1)
         helpers.call_action(
-            'datastore_search_sql',
+            'timeseries_search_sql',
             context=ctx2,
             sql=sql2)
         helpers.call_action(
-            'datastore_search_sql',
+            'timeseries_search_sql',
             context=ctx3,
             sql=sql3)
