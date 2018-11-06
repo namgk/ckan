@@ -167,6 +167,6 @@ class TestInterfaces(DatastoreFunctionalTestBase):
             'records': records
         }
 
-        helpers.call_action('datastore_create', **data)
+        helpers.call_action('timeseries_create', **data)
 
         return resource

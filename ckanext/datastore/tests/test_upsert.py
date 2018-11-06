@@ -33,7 +33,7 @@ class TestDatastoreUpsertNewTests(DatastoreFunctionalTestBase):
                        {'id': 'book', 'type': 'json'},
                        {'id': 'author', 'type': 'text'}],
         }
-        helpers.call_action('datastore_create', **data)
+        helpers.call_action('timeseries_create', **data)
         data = {
             'resource_id': resource['id'],
             'force': True,
@@ -55,7 +55,7 @@ class TestDatastoreUpsertNewTests(DatastoreFunctionalTestBase):
                        {'id': 'book', 'type': 'json'},
                        {'id': 'author', 'type': 'text'}],
         }
-        helpers.call_action('datastore_create', **data)
+        helpers.call_action('timeseries_create', **data)
         data = {
             'resource_id': resource['id'],
             'force': True,
@@ -98,7 +98,7 @@ class TestDatastoreUpsert(DatastoreLegacyTestBase):
             }
         postparams = '%s=1' % json.dumps(cls.data)
         auth = {'Authorization': str(cls.sysadmin_user.apikey)}
-        res = cls.app.post('/api/action/datastore_create', params=postparams,
+        res = cls.app.post('/api/action/timeseries_create', params=postparams,
                            extra_environ=auth)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is True
@@ -343,7 +343,7 @@ class TestDatastoreInsert(DatastoreLegacyTestBase):
             }
         postparams = '%s=1' % json.dumps(cls.data)
         auth = {'Authorization': str(cls.sysadmin_user.apikey)}
-        res = cls.app.post('/api/action/datastore_create', params=postparams,
+        res = cls.app.post('/api/action/timeseries_create', params=postparams,
                            extra_environ=auth)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is True
@@ -443,7 +443,7 @@ class TestDatastoreUpdate(DatastoreLegacyTestBase):
             }
         postparams = '%s=1' % json.dumps(cls.data)
         auth = {'Authorization': str(cls.sysadmin_user.apikey)}
-        res = cls.app.post('/api/action/datastore_create', params=postparams,
+        res = cls.app.post('/api/action/timeseries_create', params=postparams,
                            extra_environ=auth)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is True

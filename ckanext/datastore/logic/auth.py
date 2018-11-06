@@ -23,7 +23,7 @@ def datastore_auth(context, data_dict, privilege='resource_update'):
         return {'success': True}
 
 
-def datastore_create(context, data_dict):
+def timeseries_create(context, data_dict):
     if 'resource' in data_dict and data_dict['resource'].get('package_id'):
         data_dict['id'] = data_dict['resource'].get('package_id')
         privilege = 'package_update'

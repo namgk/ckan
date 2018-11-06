@@ -182,7 +182,7 @@ class TestGetAllResourcesIdsInDatastore(DatastoreFunctionalTestBase):
             'resource_id': resource_in_datastore['id'],
             'force': True,
         }
-        helpers.call_action('datastore_create', **data)
+        helpers.call_action('timeseries_create', **data)
 
         resource_ids = backend.get_all_resources_ids_in_datastore()
 
@@ -223,7 +223,7 @@ class TestBackgroundJobs(helpers.RQTestBase, DatastoreFunctionalTestBase):
         }
 
         with self._get_test_app().flask_app.test_request_context():
-            table = helpers.call_action('datastore_create', **data)
+            table = helpers.call_action('timeseries_create', **data)
         res_id = table['resource_id']
         for i in range(3):
             self.enqueue(datastore_job, args=[res_id, i])

@@ -25,10 +25,10 @@ _validate = ckan.lib.navl.dictization_functions.validate
 WHITELISTED_RESOURCES = ['_table_metadata']
 
 
-def datastore_create(context, data_dict):
+def timeseries_create(context, data_dict):
     '''Adds a new table to the DataStore.
 
-    The datastore_create action allows you to post JSON data to be
+    The timeseries_create action allows you to post JSON data to be
     stored against a resource. This endpoint also supports altering tables,
     aliases and indexes and bulk insertion. This endpoint can be called
     multiple times to initially insert more data, add fields, change the
@@ -84,7 +84,7 @@ def datastore_create(context, data_dict):
 
     '''
     backend = DatastoreBackend.get_active_backend()
-    schema = context.get('schema', dsschema.datastore_create_schema())
+    schema = context.get('schema', dsschema.timeseries_create_schema())
     records = data_dict.pop('records', None)
     resource = data_dict.pop('resource', None)
     data_dict, errors = _validate(data_dict, schema, context)
@@ -96,7 +96,7 @@ def datastore_create(context, data_dict):
     if errors:
         raise p.toolkit.ValidationError(errors)
 
-    p.toolkit.check_access('datastore_create', context, data_dict)
+    p.toolkit.check_access('timeseries_create', context, data_dict)
 
     if 'resource' in data_dict and 'resource_id' in data_dict:
         raise p.toolkit.ValidationError({
@@ -164,6 +164,9 @@ def datastore_create(context, data_dict):
     result.pop('id', None)
     result.pop('connection_url', None)
     result.pop('records', None)
+    
+    datastore_helpers.remove_autogen(result)
+    
     return result
 
 
@@ -203,7 +206,7 @@ def datastore_upsert(context, data_dict):
 
     The datastore_upsert API action allows you to add or edit records to
     an existing DataStore resource. In order for the *upsert* and *update*
-    methods to work, a unique key has to be defined via the datastore_create
+    methods to work, a unique key has to be defined via the timeseries_create
     action. The available methods are:
 
     *upsert*
@@ -261,6 +264,9 @@ def datastore_upsert(context, data_dict):
     result = backend.upsert(context, data_dict)
     result.pop('id', None)
     result.pop('connection_url', None)
+
+    datastore_helpers.remove_autogen(result)
+
     return result
 
 
@@ -361,6 +367,9 @@ def datastore_delete(context, data_dict):
 
     result.pop('id', None)
     result.pop('connection_url', None)
+
+    datastore_helpers.remove_autogen(result)
+    
     return result
 
 
@@ -466,6 +475,9 @@ def datastore_search(context, data_dict):
     result = backend.search(context, data_dict)
     result.pop('id', None)
     result.pop('connection_url', None)
+
+    datastore_helpers.remove_autogen(result)
+
     return result
 
 
@@ -521,6 +533,9 @@ def datastore_search_sql(context, data_dict):
         data_dict)
     result.pop('id', None)
     result.pop('connection_url', None)
+    
+    datastore_helpers.remove_autogen(result)
+
     return result
 
 
@@ -602,7 +617,7 @@ def _check_read_only(context, resource_id):
 @logic.validate(dsschema.datastore_function_create_schema)
 def datastore_function_create(context, data_dict):
     u'''
-    Create a trigger function for use with datastore_create
+    Create a trigger function for use with timeseries_create
 
     :param name: function name
     :type name: string

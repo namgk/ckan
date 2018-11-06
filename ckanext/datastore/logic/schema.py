@@ -98,7 +98,7 @@ def unicode_or_json_validator(value, context):
         return text_type(value)
 
 
-def datastore_create_schema():
+def timeseries_create_schema():
     schema = {
         'resource_id': [ignore_missing, text_type, resource_id_exists],
         'force': [ignore_missing, boolean_validator],

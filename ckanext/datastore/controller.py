@@ -89,7 +89,7 @@ class DatastoreController(BaseController):
                 info = []
             info = info[:len(fields)]
 
-            get_action('datastore_create')(None, {
+            get_action('timeseries_create')(None, {
                 'resource_id': resource_id,
                 'force': True,
                 'fields': [{

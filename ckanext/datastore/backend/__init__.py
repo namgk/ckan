@@ -112,9 +112,9 @@ class DatastoreBackend:
     def create(self, context, data_dict):
         """Create new resourct inside datastore.
 
-        Called by `datastore_create`.
+        Called by `timeseries_create`.
 
-        :param data_dict: See `ckanext.datastore.logic.action.datastore_create`
+        :param data_dict: See `ckanext.datastore.logic.action.timeseries_create`
         :returns: The newly created data object
         :rtype: dictonary
         """

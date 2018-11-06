@@ -64,6 +64,6 @@ class TestChainedAction(DatastoreFunctionalTestBase):
             u'records': records
         }
 
-        helpers.call_action(u'datastore_create', **data)
+        helpers.call_action(u'timeseries_create', **data)
 
         return resource

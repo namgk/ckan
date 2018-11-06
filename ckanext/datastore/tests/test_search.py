@@ -37,7 +37,7 @@ class TestDatastoreSearchNewTest(DatastoreFunctionalTestBase):
                 {'from': 'Brazil', 'to': 'Italy'}
             ],
         }
-        result = helpers.call_action('datastore_create', **data)
+        result = helpers.call_action('timeseries_create', **data)
         search_data = {
             'resource_id': resource['id'],
             'fields': 'from',
@@ -60,7 +60,7 @@ class TestDatastoreSearchNewTest(DatastoreFunctionalTestBase):
                 {'from': 'Brazil', 'year': {'foo': 1986}}
             ],
         }
-        result = helpers.call_action('datastore_create', **data)
+        result = helpers.call_action('timeseries_create', **data)
 
         search_data = {
             'resource_id': resource['id'],
@@ -84,7 +84,7 @@ class TestDatastoreSearchNewTest(DatastoreFunctionalTestBase):
                 {'the year': 2013},
             ],
         }
-        result = helpers.call_action('datastore_create', **data)
+        result = helpers.call_action('timeseries_create', **data)
         search_data = {
             'resource_id': resource['id'],
             'fields': 'the year',
@@ -134,7 +134,7 @@ class TestDatastoreSearch(DatastoreLegacyTestBase):
         }
         postparams = '%s=1' % json.dumps(cls.data)
         auth = {'Authorization': str(cls.sysadmin_user.apikey)}
-        res = cls.app.post('/api/action/datastore_create', params=postparams,
+        res = cls.app.post('/api/action/timeseries_create', params=postparams,
                            extra_environ=auth)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is True
@@ -212,7 +212,7 @@ class TestDatastoreSearch(DatastoreLegacyTestBase):
             'force': True
         })
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_create', params=postparams,
+        res = self.app.post('/api/action/timeseries_create', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is True
@@ -669,7 +669,7 @@ class TestDatastoreFullTextSearch(DatastoreLegacyTestBase):
         )
         postparams = '%s=1' % json.dumps(cls.data)
         auth = {'Authorization': str(cls.normal_user.apikey)}
-        res = cls.app.post('/api/action/datastore_create', params=postparams,
+        res = cls.app.post('/api/action/timeseries_create', params=postparams,
                            extra_environ=auth)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is True
@@ -786,7 +786,7 @@ class TestDatastoreSQL(DatastoreLegacyTestBase):
         }
         postparams = '%s=1' % json.dumps(cls.data)
         auth = {'Authorization': str(cls.sysadmin_user.apikey)}
-        res = cls.app.post('/api/action/datastore_create', params=postparams,
+        res = cls.app.post('/api/action/timeseries_create', params=postparams,
                            extra_environ=auth)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is True
@@ -931,7 +931,7 @@ class TestDatastoreSQL(DatastoreLegacyTestBase):
             'force': True
         })
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_create', params=postparams,
+        res = self.app.post('/api/action/timeseries_create', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is True
@@ -986,11 +986,11 @@ class TestDatastoreSQLFunctional(DatastoreFunctionalTestBase):
         ds1 = factories.Dataset(owner_org=org1['id'], private=True)
         ds2 = factories.Dataset(owner_org=org2['id'], private=True)
         r1 = helpers.call_action(
-            u'datastore_create',
+            u'timeseries_create',
             resource={u'package_id': ds1['id']},
             fields=[{u'id': u'spam', u'type': u'text'}])
         r2 = helpers.call_action(
-            u'datastore_create',
+            u'timeseries_create',
             resource={u'package_id': ds2['id']},
             fields=[{u'id': u'ham', u'type': u'text'}])
 

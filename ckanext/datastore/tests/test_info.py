@@ -35,7 +35,7 @@ class TestDatastoreInfo(DatastoreFunctionalTestBase):
                 {'from': 'Brazil', 'to': 'Italy', 'num': 22}
             ],
         }
-        result = helpers.call_action('datastore_create', **data)
+        result = helpers.call_action('timeseries_create', **data)
 
         info = helpers.call_action('datastore_info', id=resource['id'])
 
@@ -62,7 +62,7 @@ class TestDatastoreInfo(DatastoreFunctionalTestBase):
 
         # check we built all the urls ok
         expected_urls = (
-            'http://test.ckan.net/api/3/action/datastore_create',
+            'http://test.ckan.net/api/3/action/timeseries_create',
             'http://test.ckan.net/api/3/action/datastore_upsert',
             '<code>http://test.ckan.net/api/3/action/datastore_search',
             'http://test.ckan.net/api/3/action/datastore_search_sql',

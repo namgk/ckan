@@ -341,6 +341,27 @@ def _where_clauses(data_dict, fields_types):
             clause = (u'"{0}" = %s'.format(field), value)
         clauses.append(clause)
 
+    # Nam Giang
+    fromtime = data_dict.get('fromtime', None)
+    totime = data_dict.get('totime', None)
+
+    try:
+        if fromtime is not None:
+            fromtime_postgres = datastore_helpers.timestamp_from_string(fromtime)
+            clause = (u'"{0}" >= %s'.format("_autogen_timestamp"), fromtime_postgres)
+            clauses.append(clause)
+            # print(clause)
+        if totime is not None:
+            totime_postgres = datastore_helpers.timestamp_from_string(totime)
+            clause = (u'"{0}" <= %s'.format("_autogen_timestamp"), totime_postgres)
+            clauses.append(clause)
+            # print(clause)
+    except:
+        raise ValidationError({
+                'fields': [u'input time string not valid, fromTime: {}, toTime: {}'.format(fromtime, totime)]
+            })
+    # end Nam Giang
+
     # add full-text search where clause
     q = data_dict.get('q')
     if q:
@@ -729,6 +750,26 @@ def check_fields(context, fields):
                     field['id'])]
             })
 
+def create_timestamp_index(context, data_dict):
+    if 'fields' not in data_dict:
+        return
+
+    connection = context['connection']
+    resource_id = data_dict['resource_id']
+    field_str = u'_autogen_timestamp'
+    index_method = 'btree' or 'gist'
+    name = _generate_index_name(resource_id, field_str)
+
+    sql_index_tmpl = u'CREATE {unique} INDEX "{name}" ON "{res_id}"'
+    sql_index_string_method = sql_index_tmpl + u' USING {method}({fields})'
+    sql_index_string_method = sql_index_string_method.format(
+            res_id=resource_id,
+            unique='',
+            name=name,
+            method=index_method, fields=field_str)
+    current_indexes = _get_index_names(context['connection'], resource_id)
+    if name not in current_indexes:
+        connection.execute(sql_index_string_method)
 
 def create_indexes(context, data_dict):
     connection = context['connection']
@@ -795,6 +836,7 @@ def create_indexes(context, data_dict):
         if not has_index:
             connection.execute(sql_index_string)
 
+    create_timestamp_index(context, data_dict)
 
 def create_table(context, data_dict):
     '''Creates table, columns and column info (stored as comments).
@@ -815,6 +857,7 @@ def create_table(context, data_dict):
     datastore_fields = [
         {'id': '_id', 'type': 'serial primary key'},
         {'id': '_full_text', 'type': 'tsvector'},
+        {'id': '_autogen_timestamp', 'type': 'timestamp with time zone'},
     ]
 
     # check first row of data for additional fields
@@ -1002,7 +1045,7 @@ def upsert_data(context, data_dict):
     field_names = _pluck('id', fields)
     records = data_dict['records']
     sql_columns = ", ".join(
-        identifier(name) for name in field_names)
+        [identifier(name) for name in field_names] + ['"_autogen_timestamp"'])
 
     if method == _INSERT:
         rows = []
@@ -1016,10 +1059,12 @@ def upsert_data(context, data_dict):
                     # a tuple with an empty second value
                     value = (json.dumps(value), '')
                 row.append(value)
+            row.append(datastore_helpers.utcnow())
             rows.append(row)
-
+        
+        # another %s for _autogen_timestamp
         sql_string = u'''INSERT INTO {res_id} ({columns})
-            VALUES ({values});'''.format(
+            VALUES ({values}, %s);'''.format(
             res_id=identifier(data_dict['resource_id']),
             columns=sql_columns.replace('%', '%%'),
             values=', '.join(['%s' for field in field_names])
@@ -1077,10 +1122,11 @@ def upsert_data(context, data_dict):
 
             used_values = [record[field] for field in used_field_names]
 
+            # again, another %s for _autogen_timestamp
             if method == _UPDATE:
                 sql_string = u'''
                     UPDATE "{res_id}"
-                    SET ({columns}, "_full_text") = ({values}, NULL)
+                    SET ({columns}, "_full_text", "_autogen_timestamp") = ({values}, NULL, %s)
                     WHERE ({primary_key}) = ({primary_value});
                 '''.format(
                     res_id=data_dict['resource_id'],
@@ -1107,12 +1153,13 @@ def upsert_data(context, data_dict):
                         'key': [u'key "{0}" not found'.format(unique_values)]
                     })
 
+            # again, another %s for _autogen_timestamp
             elif method == _UPSERT:
                 sql_string = u'''
                     UPDATE "{res_id}"
-                    SET ({columns}, "_full_text") = ({values}, NULL)
+                    SET ({columns}, "_full_text", "_autogen_timestamp") = ({values}, NULL, %s)
                     WHERE ({primary_key}) = ({primary_value});
-                    INSERT INTO "{res_id}" ({columns})
+                    INSERT INTO "{res_id}" ({columns}, "_autogen_timestamp")
                            SELECT {values}
                            WHERE NOT EXISTS (SELECT 1 FROM "{res_id}"
                                     WHERE ({primary_key}) = ({primary_value}));
@@ -1968,3 +2015,15 @@ def _programming_error_summary(pe):
     # first line only, after the '(ProgrammingError)' text
     message = pe.args[0].split('\n')[0].decode('utf8')
     return message.split(u') ', 1)[-1]
+
+def _is_timeseries(context, resource_id):
+    try:
+        all_fields = context['connection'].execute(
+            u'SELECT * FROM "{0}" LIMIT 1'.format(resource_id)
+        )
+        for field in all_fields.cursor.description:
+            if field[0] == '_autogen_timestamp':
+                return True
+    except:
+        return False
+    return False/u

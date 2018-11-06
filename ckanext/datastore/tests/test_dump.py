@@ -80,7 +80,7 @@ class TestDatastoreDump(DatastoreLegacyTestBase):
         }
         postparams = '%s=1' % json.dumps(cls.data)
         auth = {'Authorization': str(cls.sysadmin_user.apikey)}
-        res = cls.app.post('/api/action/datastore_create', params=postparams,
+        res = cls.app.post('/api/action/timeseries_create', params=postparams,
                            extra_environ=auth)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is True

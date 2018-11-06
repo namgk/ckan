@@ -83,7 +83,7 @@ class DatastorePlugin(p.SingletonPlugin):
 
     def get_actions(self):
         actions = {
-            'datastore_create': action.datastore_create,
+            'timeseries_create': action.timeseries_create,
             'datastore_upsert': action.datastore_upsert,
             'datastore_delete': action.datastore_delete,
             'datastore_search': action.datastore_search,
@@ -103,7 +103,7 @@ class DatastorePlugin(p.SingletonPlugin):
 
     def get_auth_functions(self):
         return {
-            'datastore_create': auth.datastore_create,
+            'timeseries_create': auth.timeseries_create,
             'datastore_upsert': auth.datastore_upsert,
             'datastore_delete': auth.datastore_delete,
             'datastore_info': auth.datastore_info,
@@ -226,6 +226,18 @@ class DatastorePlugin(p.SingletonPlugin):
                                                              non_negative=True)
             if is_positive_int:
                 del data_dict['offset']
+
+        # Nam Giang
+        fromtime = data_dict.get('fromtime')
+        if fromtime:
+            if isinstance(fromtime, basestring):
+                del data_dict['fromtime']
+
+        totime = data_dict.get('totime')
+        if totime:
+            if isinstance(totime, basestring):
+                del data_dict['totime']
+        # end Nam Giang
 
         return data_dict
 
