@@ -28,7 +28,7 @@ DEFAULT_FORMATS = []
 ValidationError = p.toolkit.ValidationError
 
 
-class TimeseriesPlugin(p.SingletonPlugin):
+class DatastorePlugin(p.SingletonPlugin):
     p.implements(p.IConfigurable, inherit=True)
     p.implements(p.IConfigurer)
     p.implements(p.IActions)
