@@ -15,8 +15,8 @@ from ckan.tests import helpers
 from ckan.plugins.toolkit import ValidationError
 import ckan.tests.factories as factories
 from ckan.logic import NotFound
-import ckanext.datastore.backend.postgres as db
-from ckanext.datastore.tests.helpers import (
+import ckanext.timeseries.backend.postgres as db
+from ckanext.timeseries.tests.helpers import (
     rebuild_all_dbs, set_url_type,
     DatastoreFunctionalTestBase, DatastoreLegacyTestBase)
 

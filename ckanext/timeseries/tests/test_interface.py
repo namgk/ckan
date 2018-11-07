@@ -6,7 +6,7 @@ import ckan.plugins as p
 import ckan.tests.helpers as helpers
 import ckan.tests.factories as factories
 
-from ckanext.datastore.tests.helpers import DatastoreFunctionalTestBase
+from ckanext.timeseries.tests.helpers import DatastoreFunctionalTestBase
 
 assert_equals = nose.tools.assert_equals
 assert_raises = nose.tools.assert_raises

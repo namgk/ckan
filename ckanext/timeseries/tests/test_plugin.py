@@ -5,11 +5,11 @@ import mock
 
 import ckan.tests.helpers as helpers
 import ckan.plugins as p
-import ckanext.datastore.interfaces as interfaces
-import ckanext.datastore.plugin as plugin
+import ckanext.timeseries.interfaces as interfaces
+import ckanext.timeseries.plugin as plugin
 
 
-DatastorePlugin = plugin.DatastorePlugin
+TimeseriesPlugin = plugin.TimeseriesPlugin
 assert_equal = nose.tools.assert_equal
 assert_raises = nose.tools.assert_raises
 
@@ -35,8 +35,8 @@ class TestPluginLoadingOrder(object):
 
     def test_loading_datastore_last_doesnt_work(self):
         # This test is complicated because we can't import
-        # ckanext.datastore.plugin before running it. If we did so, the
-        # DatastorePlugin class would be parsed which breaks the reason of our
+        # ckanext.timeseries.plugin before running it. If we did so, the
+        # TimeseriesPlugin class would be parsed which breaks the reason of our
         # test.
         p.load('sample_datastore_plugin')
         thrown_exception = None
@@ -53,7 +53,7 @@ class TestPluginLoadingOrder(object):
              'loaded should raise DatastoreException')
         assert_equal(thrown_exception.__class__.__name__,
                      plugin.DatastoreException.__name__)
-        assert plugin.DatastorePlugin.__name__ not in idatastores, \
+        assert plugin.TimeseriesPlugin.__name__ not in idatastores, \
             ('You shouldn\'t be able to load the "datastore" plugin after'
              'another ITimeseries plugin was loaded')
 
@@ -180,7 +180,7 @@ class TestPluginTimeseriesSearch(object):
 
         assert_equal(result['where'], expected_where)
 
-    @mock.patch('ckanext.datastore.helpers.should_fts_index_field_type')
+    @mock.patch('ckanext.timeseries.helpers.should_fts_index_field_type')
     def test_fts_adds_where_clause_on_full_text_when_querying_non_indexed_fields(self, should_fts_index_field_type):
         should_fts_index_field_type.return_value = False
         expected_where = [('_full_text @@ "query country"',),
@@ -207,5 +207,5 @@ class TestPluginTimeseriesSearch(object):
         }
         _query_dict.update(query_dict)
 
-        return DatastorePlugin().timeseries_search(context, data_dict,
+        return TimeseriesPlugin().timeseries_search(context, data_dict,
                                                   fields_types, _query_dict)

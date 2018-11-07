@@ -7,10 +7,10 @@ import mock
 from ckan.common import config
 
 import ckan.tests.legacy as tests
-import ckanext.datastore.backend.postgres as db
-import ckanext.datastore.helpers as helpers
-import ckanext.datastore.plugin as plugin
-import ckanext.datastore.backend.postgres as backend
+import ckanext.timeseries.backend.postgres as db
+import ckanext.timeseries.helpers as helpers
+import ckanext.timeseries.plugin as plugin
+import ckanext.timeseries.backend.postgres as backend
 
 postgres_backend = backend.DatastorePostgresqlBackend()
 postgres_backend.configure(config)

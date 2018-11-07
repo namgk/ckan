@@ -7,7 +7,7 @@ import nose.tools
 import pyutilib.component.core
 
 
-# import ckanext.datastore.plugin as plugin
+# import ckanext.timeseries.plugin as plugin
 
 
 class _TestConfiguration(unittest.TestCase):
@@ -17,12 +17,12 @@ class _TestConfiguration(unittest.TestCase):
     # being so tested.  Also why do these test raise a custom exception?
     def setUp(self):
         self._original_plugin = ckan.plugins.unload('datastore')
-        pyutilib.component.core.PluginGlobals.singleton_services()[plugin.DatastorePlugin] = True
-        self.p = pyutilib.component.core.PluginGlobals.singleton_services()[plugin.DatastorePlugin] = ckan.plugins.load('datastore')
+        pyutilib.component.core.PluginGlobals.singleton_services()[plugin.TimeseriesPlugin] = True
+        self.p = pyutilib.component.core.PluginGlobals.singleton_services()[plugin.TimeseriesPlugin] = ckan.plugins.load('datastore')
 
     def tearDown(self):
         ckan.plugins.unload('datastore')
-        pyutilib.component.core.PluginGlobals.singleton_services()[plugin.DatastorePlugin] = self._original_plugin
+        pyutilib.component.core.PluginGlobals.singleton_services()[plugin.TimeseriesPlugin] = self._original_plugin
 
     def test_check_separate_write_and_read_url(self):
         self.p.write_url = 'postgresql://u:pass@localhost/ds'

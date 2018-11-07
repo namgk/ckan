@@ -13,8 +13,8 @@ import ckan.model as model
 import ckan.tests.legacy as tests
 
 from ckan.common import config
-import ckanext.datastore.backend.postgres as db
-from ckanext.datastore.tests.helpers import (
+import ckanext.timeseries.backend.postgres as db
+from ckanext.timeseries.tests.helpers import (
     extract, rebuild_all_dbs,
     DatastoreFunctionalTestBase, DatastoreLegacyTestBase)
 

@@ -22,8 +22,8 @@ import ckan.plugins as p
 import ckan.plugins.toolkit as toolkit
 from ckan.lib.lazyjson import LazyJSONObject
 
-import ckanext.datastore.helpers as datastore_helpers
-import ckanext.datastore.interfaces as interfaces
+import ckanext.timeseries.helpers as datastore_helpers
+import ckanext.timeseries.interfaces as interfaces
 
 from psycopg2.extras import register_default_json, register_composite
 import distutils.version
@@ -34,12 +34,12 @@ import ckan.model as model
 import ckan.plugins as plugins
 from ckan.common import config, OrderedDict
 
-from ckanext.datastore.backend import (
+from ckanext.timeseries.backend import (
     DatastoreBackend,
     DatastoreException,
     _parse_sort_clause
 )
-from ckanext.datastore.backend import InvalidDataError
+from ckanext.timeseries.backend import InvalidDataError
 
 log = logging.getLogger(__name__)
 
@@ -1955,7 +1955,7 @@ class DatastorePostgresqlBackend(DatastoreBackend):
         return drop_function(*args, **kwargs)
 
     def before_fork(self):
-        # Called by DatastorePlugin.before_fork. Dispose SQLAlchemy engines
+        # Called by TimeseriesPlugin.before_fork. Dispose SQLAlchemy engines
         # to avoid sharing them between parent and child processes.
         _dispose_engines()
 

@@ -5,7 +5,7 @@ from ckan.logic import check_access
 import ckan.lib.create_test_data as ctd
 import ckan.tests.helpers as helpers
 
-from ckanext.datastore.tests.helpers import DatastoreFunctionalTestBase
+from ckanext.timeseries.tests.helpers import DatastoreFunctionalTestBase
 
 assert_equals = nose.tools.assert_equals
 assert_raises = nose.tools.assert_raises

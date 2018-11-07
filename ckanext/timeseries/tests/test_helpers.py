@@ -4,11 +4,11 @@ import sqlalchemy.orm as orm
 import nose
 
 from ckan.common import config
-import ckanext.datastore.helpers as datastore_helpers
-from ckanext.datastore.tests.helpers import DatastoreLegacyTestBase
-import ckanext.datastore.backend.postgres as postgres_backend
-import ckanext.datastore.tests.helpers as datastore_test_helpers
-import ckanext.datastore.backend.postgres as db
+import ckanext.timeseries.helpers as datastore_helpers
+from ckanext.timeseries.tests.helpers import DatastoreLegacyTestBase
+import ckanext.timeseries.backend.postgres as postgres_backend
+import ckanext.timeseries.tests.helpers as datastore_test_helpers
+import ckanext.timeseries.backend.postgres as db
 
 
 eq_ = nose.tools.eq_

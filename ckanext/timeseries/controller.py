@@ -15,7 +15,7 @@ from ckan.plugins.toolkit import (
     c,
     h,
 )
-from ckanext.datastore.writer import (
+from ckanext.timeseries.writer import (
     csv_writer,
     tsv_writer,
     json_writer,
@@ -102,7 +102,7 @@ class DatastoreController(BaseController):
                               'take effect when the resource is next uploaded '
                               'to DataStore'))
             h.redirect_to(
-                controller='ckanext.datastore.controller:DatastoreController',
+                controller='ckanext.timeseries.controller:DatastoreController',
                 action='dictionary',
                 id=id,
                 resource_id=resource_id)

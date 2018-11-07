@@ -8,7 +8,7 @@ from ckan.lib import search
 
 import ckan.plugins as p
 from ckan.tests.helpers import FunctionalTestBase, reset_db
-import ckanext.datastore.backend.postgres as db
+import ckanext.timeseries.backend.postgres as db
 
 
 def extract(d, keys):
@@ -61,7 +61,7 @@ def set_url_type(resources, user):
 
 
 class DatastoreFunctionalTestBase(FunctionalTestBase):
-    _load_plugins = (u'datastore', )
+    _load_plugins = (u'timeseries', )
 
     @classmethod
     def setup_class(cls):
@@ -77,7 +77,7 @@ class DatastoreLegacyTestBase(object):
     """
     @classmethod
     def setup_class(cls):
-        p.load(u'datastore')
+        p.load(u'timeseries')
         reset_db()
         search.clear_all()
         engine = db.get_write_engine()
@@ -85,4 +85,4 @@ class DatastoreLegacyTestBase(object):
 
     @classmethod
     def teardown_class(cls):
-        p.unload(u'datastore')
+        p.unload(u'timeseries')

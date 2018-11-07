@@ -15,8 +15,8 @@ import ckan.tests.factories as factories
 
 from ckan.common import config
 
-import ckanext.datastore.backend.postgres as db
-from ckanext.datastore.tests.helpers import (
+import ckanext.timeseries.backend.postgres as db
+from ckanext.timeseries.tests.helpers import (
     set_url_type, DatastoreFunctionalTestBase, DatastoreLegacyTestBase)
 
 assert_equal = nose.tools.assert_equal

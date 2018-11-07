@@ -11,12 +11,12 @@ import ckan.lib.navl.dictization_functions
 import ckan.logic as logic
 import ckan.plugins as p
 from ckan.common import config
-import ckanext.datastore.logic.schema as dsschema
-import ckanext.datastore.helpers as datastore_helpers
-from ckanext.datastore.backend import (
+import ckanext.timeseries.logic.schema as dsschema
+import ckanext.timeseries.helpers as datastore_helpers
+from ckanext.timeseries.backend import (
     DatastoreBackend, InvalidDataError
 )
-from ckanext.datastore.backend.postgres import identifier
+from ckanext.timeseries.backend.postgres import identifier
 
 log = logging.getLogger(__name__)
 _get_or_bust = logic.get_or_bust
@@ -65,7 +65,7 @@ def timeseries_create(context, data_dict):
     :type indexes: list or comma separated string
     :param triggers: trigger functions to apply to this table on update/insert.
         functions may be created with
-        :meth:`~ckanext.datastore.logic.action.datastore_function_create`.
+        :meth:`~ckanext.timeseries.logic.action.datastore_function_create`.
         eg: [
         {"function": "trigger_clean_reference"},
         {"function": "trigger_check_codes"}]

@@ -6,8 +6,8 @@ import ckan.lib.create_test_data as ctd
 import ckan.model as model
 import ckan.plugins as p
 import ckan.tests.legacy as tests
-import ckanext.datastore.backend.postgres as db
-from ckanext.datastore.tests.helpers import DatastoreLegacyTestBase
+import ckanext.timeseries.backend.postgres as db
+from ckanext.timeseries.tests.helpers import DatastoreLegacyTestBase
 import nose
 from ckan.tests.helpers import _get_test_app
 import sqlalchemy.orm as orm

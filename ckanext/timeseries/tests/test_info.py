@@ -13,8 +13,8 @@ import ckan.model as model
 from ckan.tests.legacy import is_datastore_supported
 from ckan.lib import helpers as template_helpers
 
-import ckanext.datastore.backend.postgres as db
-from ckanext.datastore.tests.helpers import extract, DatastoreFunctionalTestBase
+import ckanext.timeseries.backend.postgres as db
+from ckanext.timeseries.tests.helpers import extract, DatastoreFunctionalTestBase
 
 import ckan.tests.helpers as helpers
 import ckan.tests.factories as factories

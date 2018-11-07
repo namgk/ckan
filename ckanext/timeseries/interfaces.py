@@ -157,7 +157,7 @@ class ITimeseriesBackend(interfaces.Interface):
         and, depending on `datastore.write_url`, one of them will be used
         inside actions.
 
-        `ckanext.datastore.DatastoreBackend` has method `set_active_backend`
+        `ckanext.timeseries.DatastoreBackend` has method `set_active_backend`
         which will define most suitable backend depending on schema of
         `ckan.datastore.write_url` config directive. eg. 'postgresql://a:b@x'
         will use 'postgresql' backend, but 'mongodb://a:b@c' will try to use

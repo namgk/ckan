@@ -5,7 +5,7 @@ import logging
 
 import ckan.plugins as plugins
 from ckan.common import config
-from ckanext.datastore.interfaces import ITimeseriesBackend
+from ckanext.timeseries.interfaces import ITimeseriesBackend
 
 log = logging.getLogger(__name__)
 
@@ -114,7 +114,7 @@ class DatastoreBackend:
 
         Called by `timeseries_create`.
 
-        :param data_dict: See `ckanext.datastore.logic.action.timeseries_create`
+        :param data_dict: See `ckanext.timeseries.logic.action.timeseries_create`
         :returns: The newly created data object
         :rtype: dictonary
         """
@@ -125,7 +125,7 @@ class DatastoreBackend:
 
         Called by `timeseries_upsert`.
 
-        :param data_dict: See `ckanext.datastore.logic.action.timeseries_upsert`
+        :param data_dict: See `ckanext.timeseries.logic.action.timeseries_upsert`
         :returns: The modified data object
         :rtype: dictonary
         """
@@ -136,7 +136,7 @@ class DatastoreBackend:
 
         Called by `datastore_delete`.
 
-        :param data_dict: See `ckanext.datastore.logic.action.datastore_delete`
+        :param data_dict: See `ckanext.timeseries.logic.action.datastore_delete`
         :returns: Original filters sent.
         :rtype: dictonary
         """
@@ -147,7 +147,7 @@ class DatastoreBackend:
 
         Called by `timeseries_search`.
 
-        :param data_dict: See `ckanext.datastore.logic.action.timeseries_search`
+        :param data_dict: See `ckanext.timeseries.logic.action.timeseries_search`
         :rtype: dictonary with following keys
 
         :param fields: fields/columns and their extra metadata

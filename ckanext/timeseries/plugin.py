@@ -9,16 +9,16 @@ import ckan.logic as logic
 import ckan.model as model
 from ckan.model.core import State
 
-import ckanext.datastore.helpers as datastore_helpers
-import ckanext.datastore.logic.action as action
-import ckanext.datastore.logic.auth as auth
-import ckanext.datastore.interfaces as interfaces
-from ckanext.datastore.backend import (
+import ckanext.timeseries.helpers as datastore_helpers
+import ckanext.timeseries.logic.action as action
+import ckanext.timeseries.logic.auth as auth
+import ckanext.timeseries.interfaces as interfaces
+from ckanext.timeseries.backend import (
     DatastoreException,
     _parse_sort_clause,
     DatastoreBackend
 )
-from ckanext.datastore.backend.postgres import DatastorePostgresqlBackend
+from ckanext.timeseries.backend.postgres import DatastorePostgresqlBackend
 
 log = logging.getLogger(__name__)
 _get_or_bust = logic.get_or_bust
@@ -28,7 +28,7 @@ DEFAULT_FORMATS = []
 ValidationError = p.toolkit.ValidationError
 
 
-class DatastorePlugin(p.SingletonPlugin):
+class TimeseriesPlugin(p.SingletonPlugin):
     p.implements(p.IConfigurable, inherit=True)
     p.implements(p.IConfigurer)
     p.implements(p.IActions)
@@ -108,7 +108,6 @@ class DatastorePlugin(p.SingletonPlugin):
             'timeseries_upsert': auth.timeseries_upsert,
             'datastore_delete': auth.datastore_delete,
             'datastore_info': auth.datastore_info,
-            'datastore_info': auth.datastore_info,
             'timeseries_search': auth.timeseries_search,
             'timeseries_search_sql': auth.timeseries_search_sql,
             'datastore_change_permissions': auth.datastore_change_permissions,
@@ -122,11 +121,11 @@ class DatastorePlugin(p.SingletonPlugin):
     def before_map(self, m):
         m.connect(
             '/datastore/dump/{resource_id}',
-            controller='ckanext.datastore.controller:DatastoreController',
+            controller='ckanext.timeseries.controller:DatastoreController',
             action='dump')
         m.connect(
             'resource_dictionary', '/dataset/{id}/dictionary/{resource_id}',
-            controller='ckanext.datastore.controller:DatastoreController',
+            controller='ckanext.timeseries.controller:DatastoreController',
             action='dictionary', ckan_icon='book')
         return m
 
@@ -137,7 +136,7 @@ class DatastorePlugin(p.SingletonPlugin):
         # they link to the datastore dumps.
         if resource_dict.get('url_type') == 'datastore':
             resource_dict['url'] = p.toolkit.url_for(
-                controller='ckanext.datastore.controller:DatastoreController',
+                controller='ckanext.timeseries.controller:DatastoreController',
                 action='dump', resource_id=resource_dict['id'],
                 qualified=True)
 
@@ -209,6 +208,7 @@ class DatastorePlugin(p.SingletonPlugin):
             invalid_clauses = [
                 c for c in sort_clauses
                 if not _parse_sort_clause(
+                    c, fields_types
                 )
             ]
             data_dict['sort'] = invalid_clauses
