@@ -5,7 +5,7 @@ import logging
 
 import ckan.plugins as plugins
 from ckan.common import config
-from ckanext.datastore.interfaces import ITimeseriesBackend
+from ckanext.datastore.interfaces import IDatastoreBackend
 
 log = logging.getLogger(__name__)
 
@@ -76,7 +76,7 @@ class DatastoreBackend:
     def register_backends(cls):
         """Register all backend implementations inside extensions.
         """
-        for plugin in plugins.PluginImplementations(ITimeseriesBackend):
+        for plugin in plugins.PluginImplementations(IDatastoreBackend):
             cls._backends.update(plugin.register_backends())
 
     @classmethod
@@ -112,9 +112,9 @@ class DatastoreBackend:
     def create(self, context, data_dict):
         """Create new resourct inside datastore.
 
-        Called by `timeseries_create`.
+        Called by `datastore_create`.
 
-        :param data_dict: See `ckanext.datastore.logic.action.timeseries_create`
+        :param data_dict: See `ckanext.datastore.logic.action.datastore_create`
         :returns: The newly created data object
         :rtype: dictonary
         """
@@ -123,9 +123,9 @@ class DatastoreBackend:
     def upsert(self, context, data_dict):
         """Update or create resource depending on data_dict param.
 
-        Called by `timeseries_upsert`.
+        Called by `datastore_upsert`.
 
-        :param data_dict: See `ckanext.datastore.logic.action.timeseries_upsert`
+        :param data_dict: See `ckanext.datastore.logic.action.datastore_upsert`
         :returns: The modified data object
         :rtype: dictonary
         """
@@ -145,9 +145,9 @@ class DatastoreBackend:
     def search(self, context, data_dict):
         """Base search.
 
-        Called by `timeseries_search`.
+        Called by `datastore_search`.
 
-        :param data_dict: See `ckanext.datastore.logic.action.timeseries_search`
+        :param data_dict: See `ckanext.datastore.logic.action.datastore_search`
         :rtype: dictonary with following keys
 
         :param fields: fields/columns and their extra metadata
@@ -169,7 +169,7 @@ class DatastoreBackend:
     def search_sql(self, context, data_dict):
         """Advanced search.
 
-        Called by `timeseries_search_sql`.
+        Called by `datastore_search_sql`.
         :param sql: a single seach statement
         :type sql: string
 

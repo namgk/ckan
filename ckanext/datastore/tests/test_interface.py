@@ -17,34 +17,34 @@ class TestInterfaces(DatastoreFunctionalTestBase):
         u'datastore',
         u'sample_datastore_plugin')
 
-    def test_timeseries_search_can_create_custom_filters(self):
+    def test_datastore_search_can_create_custom_filters(self):
         records = [
             {'age': 20}, {'age': 30}, {'age': 40}
         ]
         resource = self._create_datastore_resource(records)
         filters = {'age_between': [25, 35]}
 
-        result = helpers.call_action('timeseries_search',
+        result = helpers.call_action('datastore_search',
                                      resource_id=resource['id'],
                                      filters=filters)
 
         assert result['total'] == 1, result
         assert result['records'][0]['age'] == 30, result
 
-    def test_timeseries_search_filters_sent_arent_modified(self):
+    def test_datastore_search_filters_sent_arent_modified(self):
         records = [
             {'age': 20}, {'age': 30}, {'age': 40}
         ]
         resource = self._create_datastore_resource(records)
         filters = {'age_between': [25, 35]}
 
-        result = helpers.call_action('timeseries_search',
+        result = helpers.call_action('datastore_search',
                                      resource_id=resource['id'],
                                      filters=filters.copy())
 
         assert_equals(result['filters'], filters)
 
-    def test_timeseries_search_custom_filters_have_the_correct_operator_precedence(self):
+    def test_datastore_search_custom_filters_have_the_correct_operator_precedence(self):
         '''
         We're testing that the WHERE clause becomes:
             (age < 50 OR age > 60) AND age = 30
@@ -60,7 +60,7 @@ class TestInterfaces(DatastoreFunctionalTestBase):
             'age': 30
         }
 
-        result = helpers.call_action('timeseries_search',
+        result = helpers.call_action('datastore_search',
                                      resource_id=resource['id'],
                                      filters=filters)
 
@@ -68,7 +68,7 @@ class TestInterfaces(DatastoreFunctionalTestBase):
         assert result['records'][0]['age'] == 30, result
         assert_equals(result['filters'], filters)
 
-    def test_timeseries_search_insecure_filter(self):
+    def test_datastore_search_insecure_filter(self):
         records = [
             {'age': 20}, {'age': 30}, {'age': 40}
         ]
@@ -80,10 +80,10 @@ class TestInterfaces(DatastoreFunctionalTestBase):
         }
 
         assert_raises(p.toolkit.ValidationError,
-                      helpers.call_action, 'timeseries_search',
+                      helpers.call_action, 'datastore_search',
                       resource_id=resource['id'], filters=filters)
 
-        result = helpers.call_action('timeseries_search',
+        result = helpers.call_action('datastore_search',
                                      resource_id=resource['id'])
 
         assert result['total'] == 3, result
@@ -100,7 +100,7 @@ class TestInterfaces(DatastoreFunctionalTestBase):
                             force=True,
                             filters=filters)
 
-        result = helpers.call_action('timeseries_search',
+        result = helpers.call_action('datastore_search',
                                      resource_id=resource['id'])
 
         new_records_ages = [r['age'] for r in result['records']]
@@ -128,7 +128,7 @@ class TestInterfaces(DatastoreFunctionalTestBase):
                             force=True,
                             filters=filters)
 
-        result = helpers.call_action('timeseries_search',
+        result = helpers.call_action('datastore_search',
                                      resource_id=resource['id'])
 
         new_records_ages = [r['age'] for r in result['records']]
@@ -152,7 +152,7 @@ class TestInterfaces(DatastoreFunctionalTestBase):
                       resource_id=resource['id'], force=True,
                       filters=filters)
 
-        result = helpers.call_action('timeseries_search',
+        result = helpers.call_action('datastore_search',
                                      resource_id=resource['id'])
 
         assert result['total'] == 3, result
@@ -167,6 +167,6 @@ class TestInterfaces(DatastoreFunctionalTestBase):
             'records': records
         }
 
-        helpers.call_action('timeseries_create', **data)
+        helpers.call_action('datastore_create', **data)
 
         return resource

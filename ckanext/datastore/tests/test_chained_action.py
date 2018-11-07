@@ -13,7 +13,7 @@ assert_raises = nose.tools.assert_raises
 
 @p.toolkit.chained_action
 def datastore_delete(up_func, context, data_dict):
-    res = helpers.call_action(u"timeseries_search",
+    res = helpers.call_action(u"datastore_search",
                               resource_id=data_dict[u'resource_id'],
                               filters=data_dict[u'filters'],
                               limit=10,)
@@ -46,7 +46,7 @@ class TestChainedAction(DatastoreFunctionalTestBase):
                                        force=True,
                                        filters=filters)
 
-        result = helpers.call_action(u'timeseries_search',
+        result = helpers.call_action(u'datastore_search',
                                      resource_id=resource[u'id'])
 
         new_records_ages = [r[u'age'] for r in result[u'records']]
@@ -64,6 +64,6 @@ class TestChainedAction(DatastoreFunctionalTestBase):
             u'records': records
         }
 
-        helpers.call_action(u'timeseries_create', **data)
+        helpers.call_action(u'datastore_create', **data)
 
         return resource

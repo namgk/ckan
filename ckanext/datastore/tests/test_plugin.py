@@ -45,20 +45,20 @@ class TestPluginLoadingOrder(object):
         except Exception as e:
             thrown_exception = e
         idatastores = [x.__class__.__name__ for x
-                       in p.PluginImplementations(interfaces.ITimeseries)]
+                       in p.PluginImplementations(interfaces.IDatastore)]
         p.unload('sample_datastore_plugin')
 
         assert thrown_exception is not None, \
-            ('Loading "datastore" after another ITimeseries plugin was'
+            ('Loading "datastore" after another IDatastore plugin was'
              'loaded should raise DatastoreException')
         assert_equal(thrown_exception.__class__.__name__,
                      plugin.DatastoreException.__name__)
         assert plugin.DatastorePlugin.__name__ not in idatastores, \
             ('You shouldn\'t be able to load the "datastore" plugin after'
-             'another ITimeseries plugin was loaded')
+             'another IDatastore plugin was loaded')
 
 
-class TestPluginTimeseriesSearch(object):
+class TestPluginDatastoreSearch(object):
     @classmethod
     def setup_class(cls):
         p.load('datastore')
@@ -74,7 +74,7 @@ class TestPluginTimeseriesSearch(object):
             'q': 'foo',
         }
 
-        result = self._timeseries_search(data_dict=data_dict)
+        result = self._datastore_search(data_dict=data_dict)
 
         assert_equal(result['ts_query'], expected_ts_query)
 
@@ -85,7 +85,7 @@ class TestPluginTimeseriesSearch(object):
             'q': 'foo',
         }
 
-        result = self._timeseries_search(data_dict=data_dict)
+        result = self._datastore_search(data_dict=data_dict)
 
         assert_equal(result['ts_query'], expected_ts_query)
 
@@ -97,7 +97,7 @@ class TestPluginTimeseriesSearch(object):
             'lang': 'french',
         }
 
-        result = self._timeseries_search(data_dict=data_dict)
+        result = self._datastore_search(data_dict=data_dict)
 
         assert_equal(result['ts_query'], expected_ts_query)
 
@@ -108,7 +108,7 @@ class TestPluginTimeseriesSearch(object):
             'lang': 'french',
         }
 
-        result = self._timeseries_search(data_dict=data_dict)
+        result = self._datastore_search(data_dict=data_dict)
 
         assert expected_select_content in result['select'][0], result['select']
 
@@ -118,7 +118,7 @@ class TestPluginTimeseriesSearch(object):
             'q': 'foo',
         }
 
-        result = self._timeseries_search(data_dict=data_dict)
+        result = self._datastore_search(data_dict=data_dict)
 
         assert_equal(result['where'], expected_where)
 
@@ -127,7 +127,7 @@ class TestPluginTimeseriesSearch(object):
             'q': {'inexistent-field': 'value'},
         }
 
-        result = self._timeseries_search(data_dict=data_dict, fields_types={})
+        result = self._datastore_search(data_dict=data_dict, fields_types={})
 
         assert_equal(result['where'], [])
 
@@ -142,7 +142,7 @@ class TestPluginTimeseriesSearch(object):
             'country': 'text',
         }
 
-        result = self._timeseries_search(data_dict=data_dict,
+        result = self._datastore_search(data_dict=data_dict,
                                         fields_types=fields_types)
 
         assert_equal(result['where'], expected_where)
@@ -158,7 +158,7 @@ class TestPluginTimeseriesSearch(object):
             'country': 'text',
         }
 
-        result = self._timeseries_search(data_dict=data_dict,
+        result = self._datastore_search(data_dict=data_dict,
                                         fields_types=fields_types)
 
         assert_equal(result['where'], expected_where)
@@ -175,7 +175,7 @@ class TestPluginTimeseriesSearch(object):
             'country': 'text',
         }
 
-        result = self._timeseries_search(data_dict=data_dict,
+        result = self._datastore_search(data_dict=data_dict,
                                         fields_types=fields_types)
 
         assert_equal(result['where'], expected_where)
@@ -194,12 +194,12 @@ class TestPluginTimeseriesSearch(object):
             'country': 'non-indexed field type',
         }
 
-        result = self._timeseries_search(data_dict=data_dict,
+        result = self._datastore_search(data_dict=data_dict,
                                         fields_types=fields_types)
 
         assert_equal(result['where'], expected_where)
 
-    def _timeseries_search(self, context={}, data_dict={}, fields_types={}, query_dict={}):
+    def _datastore_search(self, context={}, data_dict={}, fields_types={}, query_dict={}):
         _query_dict = {
             'select': [],
             'sort': [],
@@ -207,5 +207,5 @@ class TestPluginTimeseriesSearch(object):
         }
         _query_dict.update(query_dict)
 
-        return DatastorePlugin().timeseries_search(context, data_dict,
+        return DatastorePlugin().datastore_search(context, data_dict,
                                                   fields_types, _query_dict)

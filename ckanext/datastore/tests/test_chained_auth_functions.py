@@ -19,7 +19,7 @@ class TestAuthException(Exception):
 
 
 @p.toolkit.chained_auth_function
-def timeseries_search_sql_auth(up_func, context, data_dict):
+def datastore_search_sql_auth(up_func, context, data_dict):
     # simple checks to confirm that the up_func we've received is the original
     # sql search auth function
     assert_equals(up_func.auth_allow_anonymous_access, True)
@@ -31,7 +31,7 @@ class ExampleDataStoreSearchSQLPlugin(p.SingletonPlugin):
     p.implements(p.IAuthFunctions)
 
     def get_auth_functions(self):
-        return {u'timeseries_search_sql': timeseries_search_sql_auth}
+        return {u'datastore_search_sql': datastore_search_sql_auth}
 
 
 class TestChainedAuth(DatastoreFunctionalTestBase):
@@ -39,12 +39,12 @@ class TestChainedAuth(DatastoreFunctionalTestBase):
         u'datastore',
         u'example_data_store_search_sql_plugin')
 
-    def test_timeseries_search_sql_auth(self):
+    def test_datastore_search_sql_auth(self):
         ctd.CreateTestData.create()
         with assert_raises(TestAuthException) as raise_context:
             # checking access should call to our chained version defined above
             # first, thus this should throw an exception
-            check_access(u'timeseries_search_sql', {
+            check_access(u'datastore_search_sql', {
                 u'user': u'annafan', u'table_names': []}, {})
         # check that exception returned has the message from our auth function
         assert_equals(raise_context.exception.message, auth_message)

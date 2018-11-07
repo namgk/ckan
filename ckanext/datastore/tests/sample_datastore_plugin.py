@@ -6,7 +6,7 @@ import ckanext.datastore.interfaces as interfaces
 
 
 class SampleDataStorePlugin(p.SingletonPlugin):
-    p.implements(interfaces.ITimeseries, inherit=True)
+    p.implements(interfaces.IDatastore, inherit=True)
 
     def datastore_validate(self, context, data_dict, column_names):
         valid_filters = ('age_between', 'age_not_between', 'insecure_filter')
@@ -17,7 +17,7 @@ class SampleDataStorePlugin(p.SingletonPlugin):
 
         return data_dict
 
-    def timeseries_search(self, context, data_dict, column_names, query_dict):
+    def datastore_search(self, context, data_dict, column_names, query_dict):
         query_dict['where'] += self._where(data_dict)
         return query_dict
 

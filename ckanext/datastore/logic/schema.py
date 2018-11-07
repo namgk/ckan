@@ -98,7 +98,7 @@ def unicode_or_json_validator(value, context):
         return text_type(value)
 
 
-def timeseries_create_schema():
+def datastore_create_schema():
     schema = {
         'resource_id': [ignore_missing, text_type, resource_id_exists],
         'force': [ignore_missing, boolean_validator],
@@ -128,7 +128,7 @@ def timeseries_create_schema():
     return schema
 
 
-def timeseries_upsert_schema():
+def datastore_upsert_schema():
     schema = {
         'resource_id': [not_missing, not_empty, text_type],
         'force': [ignore_missing, boolean_validator],
@@ -152,7 +152,7 @@ def datastore_delete_schema():
     return schema
 
 
-def timeseries_search_schema():
+def datastore_search_schema():
     schema = {
         'resource_id': [not_missing, not_empty, text_type],
         'id': [ignore_missing],
@@ -160,8 +160,6 @@ def timeseries_search_schema():
         'plain': [ignore_missing, boolean_validator],
         'filters': [ignore_missing, json_validator],
         'language': [ignore_missing, text_type],
-        'fromtime': [ignore_missing, text_type],
-        'totime': [ignore_missing, text_type],
         'limit': [ignore_missing, int_validator],
         'offset': [ignore_missing, int_validator],
         'fields': [ignore_missing, list_of_strings_or_string],

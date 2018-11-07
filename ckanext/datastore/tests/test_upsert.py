@@ -33,7 +33,7 @@ class TestDatastoreUpsertNewTests(DatastoreFunctionalTestBase):
                        {'id': 'book', 'type': 'json'},
                        {'id': 'author', 'type': 'text'}],
         }
-        helpers.call_action('timeseries_create', **data)
+        helpers.call_action('datastore_create', **data)
         data = {
             'resource_id': resource['id'],
             'force': True,
@@ -43,7 +43,7 @@ class TestDatastoreUpsertNewTests(DatastoreFunctionalTestBase):
                  'book': {'code': 'A', 'title': u'ñ'},
                  'author': 'tolstoy'}],
         }
-        helpers.call_action('timeseries_upsert', **data)
+        helpers.call_action('datastore_upsert', **data)
 
     def test_upsert_doesnt_crash_with_json_field_with_string_value(self):
         resource = factories.Resource()
@@ -55,7 +55,7 @@ class TestDatastoreUpsertNewTests(DatastoreFunctionalTestBase):
                        {'id': 'book', 'type': 'json'},
                        {'id': 'author', 'type': 'text'}],
         }
-        helpers.call_action('timeseries_create', **data)
+        helpers.call_action('datastore_create', **data)
         data = {
             'resource_id': resource['id'],
             'force': True,
@@ -65,7 +65,7 @@ class TestDatastoreUpsertNewTests(DatastoreFunctionalTestBase):
                  'book': u'ñ',
                  'author': 'tolstoy'}],
         }
-        helpers.call_action('timeseries_upsert', **data)
+        helpers.call_action('datastore_upsert', **data)
 
 
 class TestDatastoreUpsert(DatastoreLegacyTestBase):
@@ -98,7 +98,7 @@ class TestDatastoreUpsert(DatastoreLegacyTestBase):
             }
         postparams = '%s=1' % json.dumps(cls.data)
         auth = {'Authorization': str(cls.sysadmin_user.apikey)}
-        res = cls.app.post('/api/action/timeseries_create', params=postparams,
+        res = cls.app.post('/api/action/datastore_create', params=postparams,
                            extra_environ=auth)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is True
@@ -111,7 +111,7 @@ class TestDatastoreUpsert(DatastoreLegacyTestBase):
             'resource_id': self.data['resource_id']
         }
         postparams = '%s=1' % json.dumps(data)
-        res = self.app.post('/api/action/timeseries_upsert', params=postparams,
+        res = self.app.post('/api/action/datastore_upsert', params=postparams,
                             status=403)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is False
@@ -119,7 +119,7 @@ class TestDatastoreUpsert(DatastoreLegacyTestBase):
     def test_upsert_empty_fails(self):
         postparams = '%s=1' % json.dumps({})
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/timeseries_upsert', params=postparams,
+        res = self.app.post('/api/action/datastore_upsert', params=postparams,
                             extra_environ=auth, status=409)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is False
@@ -145,7 +145,7 @@ class TestDatastoreUpsert(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/timeseries_upsert', params=postparams,
+        res = self.app.post('/api/action/datastore_upsert', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
 
@@ -176,7 +176,7 @@ class TestDatastoreUpsert(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/timeseries_upsert', params=postparams,
+        res = self.app.post('/api/action/datastore_upsert', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
 
@@ -201,7 +201,7 @@ class TestDatastoreUpsert(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/timeseries_upsert', params=postparams,
+        res = self.app.post('/api/action/datastore_upsert', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
 
@@ -225,7 +225,7 @@ class TestDatastoreUpsert(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/timeseries_upsert', params=postparams,
+        res = self.app.post('/api/action/datastore_upsert', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
 
@@ -249,7 +249,7 @@ class TestDatastoreUpsert(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/timeseries_upsert', params=postparams,
+        res = self.app.post('/api/action/datastore_upsert', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
 
@@ -264,7 +264,7 @@ class TestDatastoreUpsert(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/timeseries_upsert', params=postparams,
+        res = self.app.post('/api/action/datastore_upsert', params=postparams,
                             extra_environ=auth, status=409)
         res_dict = json.loads(res.body)
 
@@ -279,7 +279,7 @@ class TestDatastoreUpsert(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/timeseries_upsert', params=postparams,
+        res = self.app.post('/api/action/datastore_upsert', params=postparams,
                             extra_environ=auth, status=409)
         res_dict = json.loads(res.body)
 
@@ -298,17 +298,17 @@ class TestDatastoreUpsert(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/timeseries_upsert', params=postparams,
+        res = self.app.post('/api/action/datastore_upsert', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is True, res_dict
 
         c = self.Session.connection()
         results = c.execute('select * from "{0}"'.format(data['resource_id']))
-        record = [r for r in results.fetchall() if r[3] == hhguide] # r[2] is autogen_timestamp
+        record = [r for r in results.fetchall() if r[2] == hhguide]
         self.Session.remove()
         assert len(record) == 1, record
-        assert_equal(json.loads(record[0][5].json), # 4->5 autogen
+        assert_equal(json.loads(record[0][4].json),
                      data['records'][0]['nested'])
 
 
@@ -343,7 +343,7 @@ class TestDatastoreInsert(DatastoreLegacyTestBase):
             }
         postparams = '%s=1' % json.dumps(cls.data)
         auth = {'Authorization': str(cls.sysadmin_user.apikey)}
-        res = cls.app.post('/api/action/timeseries_create', params=postparams,
+        res = cls.app.post('/api/action/datastore_create', params=postparams,
                            extra_environ=auth)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is True
@@ -360,7 +360,7 @@ class TestDatastoreInsert(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/timeseries_upsert', params=postparams,
+        res = self.app.post('/api/action/datastore_upsert', params=postparams,
                             extra_environ=auth, status=409)
         res_dict = json.loads(res.body)
 
@@ -375,7 +375,7 @@ class TestDatastoreInsert(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/timeseries_upsert', params=postparams,
+        res = self.app.post('/api/action/datastore_upsert', params=postparams,
                             extra_environ=auth, status=409)
         res_dict = json.loads(res.body)
 
@@ -395,7 +395,7 @@ class TestDatastoreInsert(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/timeseries_upsert', params=postparams,
+        res = self.app.post('/api/action/datastore_upsert', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
 
@@ -443,7 +443,7 @@ class TestDatastoreUpdate(DatastoreLegacyTestBase):
             }
         postparams = '%s=1' % json.dumps(cls.data)
         auth = {'Authorization': str(cls.sysadmin_user.apikey)}
-        res = cls.app.post('/api/action/timeseries_create', params=postparams,
+        res = cls.app.post('/api/action/datastore_create', params=postparams,
                            extra_environ=auth)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is True
@@ -470,9 +470,8 @@ class TestDatastoreUpdate(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/timeseries_upsert', params=postparams,
+        res = self.app.post('/api/action/datastore_upsert', params=postparams,
                             extra_environ=auth)
-        
         res_dict = json.loads(res.body)
 
         assert res_dict['success'] is True
@@ -500,7 +499,7 @@ class TestDatastoreUpdate(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/timeseries_upsert', params=postparams,
+        res = self.app.post('/api/action/datastore_upsert', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
 
@@ -525,7 +524,7 @@ class TestDatastoreUpdate(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/timeseries_upsert', params=postparams,
+        res = self.app.post('/api/action/datastore_upsert', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
 
@@ -550,7 +549,7 @@ class TestDatastoreUpdate(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/timeseries_upsert', params=postparams,
+        res = self.app.post('/api/action/datastore_upsert', params=postparams,
                             extra_environ=auth, status=409)
         res_dict = json.loads(res.body)
 
@@ -565,7 +564,7 @@ class TestDatastoreUpdate(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/timeseries_upsert', params=postparams,
+        res = self.app.post('/api/action/datastore_upsert', params=postparams,
                             extra_environ=auth, status=409)
         res_dict = json.loads(res.body)
 
@@ -580,7 +579,7 @@ class TestDatastoreUpdate(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/timeseries_upsert', params=postparams,
+        res = self.app.post('/api/action/datastore_upsert', params=postparams,
                             extra_environ=auth, status=409)
         res_dict = json.loads(res.body)
 
