@@ -305,10 +305,10 @@ class TestDatastoreUpsert(DatastoreLegacyTestBase):
 
         c = self.Session.connection()
         results = c.execute('select * from "{0}"'.format(data['resource_id']))
-        record = [r for r in results.fetchall() if r[2] == hhguide]
+        record = [r for r in results.fetchall() if r[3] == hhguide] # r[2] is autogen_timestamp
         self.Session.remove()
         assert len(record) == 1, record
-        assert_equal(json.loads(record[0][4].json),
+        assert_equal(json.loads(record[0][5].json), # 4->5 autogen
                      data['records'][0]['nested'])
 
 
@@ -473,8 +473,6 @@ class TestDatastoreUpdate(DatastoreLegacyTestBase):
         res = self.app.post('/api/action/timeseries_upsert', params=postparams,
                             extra_environ=auth)
         
-        print res
-
         res_dict = json.loads(res.body)
 
         assert res_dict['success'] is True

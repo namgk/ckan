@@ -9,7 +9,7 @@ import datetime
 import pytz
 import iso8601
 import re
-
+from ckan.common import config
 from six import string_types
 
 from ckan.plugins.toolkit import get_action, ObjectNotFound, NotAuthorized

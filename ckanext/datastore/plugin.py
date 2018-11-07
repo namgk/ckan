@@ -78,6 +78,7 @@ class DatastorePlugin(p.SingletonPlugin):
     def configure(self, config):
         self.config = config
         self.backend.configure(config)
+        self.backend._create_alias_table()
 
     # IActions
 
@@ -106,6 +107,7 @@ class DatastorePlugin(p.SingletonPlugin):
             'timeseries_create': auth.timeseries_create,
             'timeseries_upsert': auth.timeseries_upsert,
             'datastore_delete': auth.datastore_delete,
+            'datastore_info': auth.datastore_info,
             'datastore_info': auth.datastore_info,
             'timeseries_search': auth.timeseries_search,
             'timeseries_search_sql': auth.timeseries_search_sql,
@@ -207,7 +209,6 @@ class DatastorePlugin(p.SingletonPlugin):
             invalid_clauses = [
                 c for c in sort_clauses
                 if not _parse_sort_clause(
-                    c, fields_types
                 )
             ]
             data_dict['sort'] = invalid_clauses

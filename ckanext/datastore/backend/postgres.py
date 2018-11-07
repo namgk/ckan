@@ -73,6 +73,7 @@ _INSERT = 'insert'
 _UPSERT = 'upsert'
 _UPDATE = 'update'
 
+max_resource_size = datastore_helpers.get_max_resource_size()
 
 if not os.environ.get('DATASTORE_LOAD'):
     ValidationError = toolkit.ValidationError
@@ -1036,6 +1037,12 @@ def insert_data(context, data_dict):
 
 def upsert_data(context, data_dict):
     '''insert all data from records'''
+    try:
+        _cleanup_resource(data_dict['resource_id'], context['connection'])
+    except Exception, e:
+        log.warn("Error while cleaning up data {0!r}".format(e.message))
+        pass
+
     if not data_dict.get('records'):
         return
 
@@ -1141,7 +1148,7 @@ def upsert_data(context, data_dict):
                 )
                 try:
                     results = context['connection'].execute(
-                        sql_string, used_values + ['', datastore_helpers.utcnow()] +  unique_values)
+                        sql_string, used_values + [datastore_helpers.utcnow()] +  unique_values)
                 except sqlalchemy.exc.DatabaseError as err:
                     raise ValidationError({
                         u'records': [_programming_error_summary(err)],
@@ -1159,8 +1166,8 @@ def upsert_data(context, data_dict):
                     UPDATE "{res_id}"
                     SET ({columns}, "_full_text", "_autogen_timestamp") = ({values}, NULL, %s)
                     WHERE ({primary_key}) = ({primary_value});
-                    INSERT INTO "{res_id}" ({columns}, "_autogen_timestamp")
-                           SELECT {values}
+                    INSERT INTO "{res_id}" ({columns}, "_full_text", "_autogen_timestamp")
+                           SELECT {values}, NULL, %s
                            WHERE NOT EXISTS (SELECT 1 FROM "{res_id}"
                                     WHERE ({primary_key}) = ({primary_value}));
                 '''.format(
@@ -1175,15 +1182,10 @@ def upsert_data(context, data_dict):
                     primary_value=u','.join(["%s"] * len(unique_keys))
                 )
                 try:
-                    print 'ahffere'
-                    print sql_string
-                    print used_values
-                    print unique_values
                     context['connection'].execute(
                         sql_string,
-                        (used_values+ ['', datastore_helpers.utcnow()] + unique_values) * 2)
+                        (used_values+ [datastore_helpers.utcnow()] + unique_values) * 2)
                 except sqlalchemy.exc.DatabaseError as err:
-                    print err
                     raise ValidationError({
                         u'records': [_programming_error_summary(err)],
                         u'_records_row': num})
@@ -1957,6 +1959,33 @@ class DatastorePostgresqlBackend(DatastoreBackend):
         # to avoid sharing them between parent and child processes.
         _dispose_engines()
 
+    def _create_alias_table(self):
+        mapping_sql = '''
+            SELECT DISTINCT
+                pg_relation_size(dependee.oid) AS size,
+                substr(md5(dependee.relname || COALESCE(dependent.relname, '')), 0, 17) AS "_id",
+                dependee.relname AS name,
+                dependee.oid AS oid,
+                dependent.relname AS alias_of
+                -- dependent.oid AS oid
+            FROM
+                pg_class AS dependee
+                LEFT OUTER JOIN pg_rewrite AS r ON r.ev_class = dependee.oid
+                LEFT OUTER JOIN pg_depend AS d ON d.objid = r.oid
+                LEFT OUTER JOIN pg_class AS dependent ON d.refobjid = dependent.oid
+            WHERE
+                (dependee.oid != dependent.oid OR dependent.oid IS NULL) AND
+                (dependee.relname IN (SELECT tablename FROM pg_catalog.pg_tables)
+                    OR dependee.relname IN (SELECT viewname FROM pg_catalog.pg_views)) AND
+                dependee.relnamespace = (SELECT oid FROM pg_namespace WHERE nspname='public')
+            ORDER BY dependee.oid DESC;
+        '''
+        create_alias_table_sql = u'CREATE OR REPLACE VIEW "_table_metadata_ts" AS {0}'.format(mapping_sql)
+        try:
+            connection = get_write_engine().connect()
+            connection.execute(create_alias_table_sql)
+        finally:
+            connection.close()
 
 def create_function(name, arguments, rettype, definition, or_replace):
     sql = u'''
@@ -2021,6 +2050,13 @@ def _programming_error_summary(pe):
     message = pe.args[0].split('\n')[0].decode('utf8')
     return message.split(u') ', 1)[-1]
 
+def _get_resource_size(resource_id, conn):
+    sql_resource_size = 'select size from _table_metadata_ts \
+        where name = %s'
+    
+    size = conn.execute(sql_resource_size, resource_id).fetchone()
+    return size[0]
+
 def _is_timeseries(context, resource_id):
     try:
         all_fields = context['connection'].execute(
@@ -2032,3 +2068,66 @@ def _is_timeseries(context, resource_id):
     except:
         return False
     return False/u
+
+def _cleanup_resource(resource_id, conn):
+    size = _get_resource_size(resource_id, conn)
+    if size < max_resource_size:
+        return
+
+    sql_resource_count = 'select min("_id"), count("_id") \
+        from "{}" '
+    min_count = conn.execute(sql_resource_count.format(resource_id)).fetchone()
+    min_id = int(min_count[0])
+    count = int(min_count[1])
+
+    # approximately calculate the max row counts based on
+    # current size and count ratio
+    # not work well when there's few rows (count/size not consistent)
+    max_count = max_resource_size*count/size
+    if count < max_count:
+        return
+
+    resource = p.toolkit.get_action('resource_show')(None, {'id':resource_id})
+    retention = int(resource['retention']) if 'retention' in resource else 33
+
+    exceeding_amount = count - max_count
+    retention_amount = int(retention * max_count / 100)
+    delete_up_to = min_id + retention_amount + exceeding_amount
+
+    trans = conn.begin()
+    try:
+        sql_delete = 'delete from "{}" where _id < {}'.format(resource_id, delete_up_to)
+        log.debug('Squashing old data: {}'.format(sql_delete))
+        trans.commit()
+    except Exception, e:
+        trans.rollback()
+
+    conn.execute(sql_delete)
+
+def _create_alias_table(self):
+    mapping_sql = '''
+        SELECT DISTINCT
+            pg_relation_size(dependee.oid) AS size,
+            substr(md5(dependee.relname || COALESCE(dependent.relname, '')), 0, 17) AS "_id",
+            dependee.relname AS name,
+            dependee.oid AS oid,
+            dependent.relname AS alias_of
+            -- dependent.oid AS oid
+        FROM
+            pg_class AS dependee
+            LEFT OUTER JOIN pg_rewrite AS r ON r.ev_class = dependee.oid
+            LEFT OUTER JOIN pg_depend AS d ON d.objid = r.oid
+            LEFT OUTER JOIN pg_class AS dependent ON d.refobjid = dependent.oid
+        WHERE
+            (dependee.oid != dependent.oid OR dependent.oid IS NULL) AND
+            (dependee.relname IN (SELECT tablename FROM pg_catalog.pg_tables)
+                OR dependee.relname IN (SELECT viewname FROM pg_catalog.pg_views)) AND
+            dependee.relnamespace = (SELECT oid FROM pg_namespace WHERE nspname='public')
+        ORDER BY dependee.oid DESC;
+    '''
+    create_alias_table_sql = u'CREATE OR REPLACE VIEW "_table_metadata_ts" AS {0}'.format(mapping_sql)
+    try:
+        connection = get_write_engine().connect()
+        connection.execute(create_alias_table_sql)
+    finally:
+        connection.close()
