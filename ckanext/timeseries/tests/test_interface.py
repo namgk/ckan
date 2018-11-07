@@ -14,8 +14,8 @@ assert_raises = nose.tools.assert_raises
 
 class TestInterfaces(DatastoreFunctionalTestBase):
     _load_plugins = (
-        u'datastore',
-        u'sample_datastore_plugin')
+        u'timeseries',
+        u'sample_timeseries_plugin')
 
     def test_timeseries_search_can_create_custom_filters(self):
         records = [

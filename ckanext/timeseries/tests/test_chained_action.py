@@ -31,7 +31,7 @@ class ExampleDataStoreDeletedWithCountPlugin(p.SingletonPlugin):
 
 class TestChainedAction(DatastoreFunctionalTestBase):
     _load_plugins = (
-        u'datastore',
+        u'timeseries',
         u'example_datastore_deleted_with_count_plugin')
 
     def test_datastore_delete_filters(self):

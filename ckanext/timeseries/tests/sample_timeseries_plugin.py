@@ -5,7 +5,7 @@ import ckan.plugins as p
 import ckanext.timeseries.interfaces as interfaces
 
 
-class SampleDataStorePlugin(p.SingletonPlugin):
+class SampleTimeseriesPlugin(p.SingletonPlugin):
     p.implements(interfaces.ITimeseries, inherit=True)
 
     def datastore_validate(self, context, data_dict, column_names):

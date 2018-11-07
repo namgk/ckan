@@ -86,12 +86,12 @@ class TimeseriesPlugin(p.SingletonPlugin):
         actions = {
             'timeseries_create': action.timeseries_create,
             'timeseries_upsert': action.timeseries_upsert,
-            'datastore_delete': action.datastore_delete,
+            #'datastore_delete': action.datastore_delete,
             'timeseries_search': action.timeseries_search,
-            'datastore_info': action.datastore_info,
-            'datastore_function_create': action.datastore_function_create,
-            'datastore_function_delete': action.datastore_function_delete,
-            'datastore_run_triggers': action.datastore_run_triggers,
+            #'datastore_info': action.datastore_info,
+            #'datastore_function_create': action.datastore_function_create,
+            #'datastore_function_delete': action.datastore_function_delete,
+            #'datastore_run_triggers': action.datastore_run_triggers,
         }
         if getattr(self.backend, 'enable_sql_search', False):
             # Only enable search_sql if the config/backend does not disable it
@@ -106,13 +106,13 @@ class TimeseriesPlugin(p.SingletonPlugin):
         return {
             'timeseries_create': auth.timeseries_create,
             'timeseries_upsert': auth.timeseries_upsert,
-            'datastore_delete': auth.datastore_delete,
-            'datastore_info': auth.datastore_info,
+            #'datastore_delete': auth.datastore_delete,
+            #'datastore_info': auth.datastore_info,
             'timeseries_search': auth.timeseries_search,
             'timeseries_search_sql': auth.timeseries_search_sql,
-            'datastore_change_permissions': auth.datastore_change_permissions,
-            'datastore_function_create': auth.datastore_function_create,
-            'datastore_function_delete': auth.datastore_function_delete,
+            #'datastore_change_permissions': auth.datastore_change_permissions,
+            #'datastore_function_create': auth.datastore_function_create,
+            #'datastore_function_delete': auth.datastore_function_delete,
             'datastore_run_triggers': auth.datastore_run_triggers,
         }
 

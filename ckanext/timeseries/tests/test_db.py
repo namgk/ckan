@@ -195,7 +195,7 @@ def datastore_job(res_id, value):
     A background job that uses the Datastore.
     '''
     app = helpers._get_test_app()
-    p.load('datastore')
+    p.load('timeseries')
     data = {
         'resource_id': res_id,
         'method': 'insert',

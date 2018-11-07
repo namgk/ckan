@@ -17,36 +17,36 @@ assert_raises = nose.tools.assert_raises
 class TestPluginLoadingOrder(object):
     def setup(self):
         if p.plugin_loaded('datastore'):
-            p.unload('datastore')
+            p.unload('timeseries')
         if p.plugin_loaded('sample_datastore_plugin'):
-            p.unload('sample_datastore_plugin')
+            p.unload('sample_timeseries_plugin')
 
     def teardown(self):
         if p.plugin_loaded('sample_datastore_plugin'):
-            p.unload('sample_datastore_plugin')
+            p.unload('sample_timeseries_plugin')
         if p.plugin_loaded('datastore'):
-            p.unload('datastore')
+            p.unload('timeseries')
 
     def test_loading_datastore_first_works(self):
-        p.load('datastore')
-        p.load('sample_datastore_plugin')
-        p.unload('sample_datastore_plugin')
-        p.unload('datastore')
+        p.load('timeseries')
+        p.load('sample_timeseries_plugin')
+        p.unload('sample_timeseries_plugin')
+        p.unload('timeseries')
 
     def test_loading_datastore_last_doesnt_work(self):
         # This test is complicated because we can't import
         # ckanext.timeseries.plugin before running it. If we did so, the
         # TimeseriesPlugin class would be parsed which breaks the reason of our
         # test.
-        p.load('sample_datastore_plugin')
+        p.load('sample_timeseries_plugin')
         thrown_exception = None
         try:
-            p.load('datastore')
+            p.load('timeseries')
         except Exception as e:
             thrown_exception = e
         idatastores = [x.__class__.__name__ for x
                        in p.PluginImplementations(interfaces.ITimeseries)]
-        p.unload('sample_datastore_plugin')
+        p.unload('sample_timeseries_plugin')
 
         assert thrown_exception is not None, \
             ('Loading "datastore" after another ITimeseries plugin was'
@@ -61,11 +61,11 @@ class TestPluginLoadingOrder(object):
 class TestPluginTimeseriesSearch(object):
     @classmethod
     def setup_class(cls):
-        p.load('datastore')
+        p.load('timeseries')
 
     @classmethod
     def teardown_class(cls):
-        p.unload('datastore')
+        p.unload('timeseries')
 
     @helpers.change_config('ckan.datastore.default_fts_lang', None)
     def test_english_is_default_fts_language(self):
