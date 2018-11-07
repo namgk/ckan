@@ -73,7 +73,7 @@ class DatastoreController(BaseController):
                 None, {'id': id})
             c.resource = get_action('resource_show')(
                 None, {'id': resource_id})
-            rec = get_action('datastore_search')(None, {
+            rec = get_action('timeseries_search')(None, {
                 'resource_id': resource_id,
                 'limit': 0})
         except (ObjectNotFound, NotAuthorized):
@@ -89,7 +89,7 @@ class DatastoreController(BaseController):
                 info = []
             info = info[:len(fields)]
 
-            get_action('datastore_create')(None, {
+            get_action('timeseries_create')(None, {
                 'resource_id': resource_id,
                 'force': True,
                 'fields': [{
@@ -131,7 +131,7 @@ def dump_to(resource_id, output, fmt, offset, limit, options):
         return writer_factory(output, fields, resource_id, bom)
 
     def result_page(offs, lim):
-        return get_action('datastore_search')(None, {
+        return get_action('timeseries_search')(None, {
             'resource_id': resource_id,
             'limit':
                 PAGINATE_BY if limit is None

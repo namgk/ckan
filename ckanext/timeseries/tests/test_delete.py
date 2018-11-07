@@ -57,7 +57,7 @@ class TestDatastoreDelete(DatastoreLegacyTestBase):
     def _create(self):
         postparams = '%s=1' % json.dumps(self.data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_create', params=postparams,
+        res = self.app.post('/api/action/timeseries_create', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is True
@@ -110,12 +110,12 @@ class TestDatastoreDelete(DatastoreLegacyTestBase):
             },
         }
 
-        result = helpers.call_action('datastore_create', **data)
+        result = helpers.call_action('timeseries_create', **data)
         resource_id = result['resource_id']
         helpers.call_action('resource_delete', id=resource_id)
 
         assert_raises(
-            NotFound, helpers.call_action, 'datastore_search',
+            NotFound, helpers.call_action, 'timeseries_search',
             resource_id=resource_id)
 
     def test_datastore_deleted_during_resource_only_for_deleted_resource(self):
@@ -127,11 +127,11 @@ class TestDatastoreDelete(DatastoreLegacyTestBase):
         }
 
         result_1 = helpers.call_action(
-            'datastore_create', resource=data.copy())
+            'timeseries_create', resource=data.copy())
         resource_id_1 = result_1['resource_id']
 
         result_2 = helpers.call_action(
-            'datastore_create', resource=data.copy())
+            'timeseries_create', resource=data.copy())
         resource_id_2 = result_2['resource_id']
 
         res_1 = model.Resource.get(resource_id_1)
@@ -147,7 +147,7 @@ class TestDatastoreDelete(DatastoreLegacyTestBase):
         helpers.call_action('resource_delete', id=resource_id_1)
 
         assert_raises(
-            NotFound, helpers.call_action, 'datastore_search',
+            NotFound, helpers.call_action, 'timeseries_search',
             resource_id=resource_id_1)
         assert_raises(
             NotFound, helpers.call_action, 'resource_show',
@@ -278,7 +278,7 @@ class TestDatastoreDelete(DatastoreLegacyTestBase):
         assert(results['success'] is True)
 
         res = self.app.post(
-            '/api/action/datastore_search',
+            '/api/action/timeseries_search',
             params='{0}=1'.format(
                 json.dumps({
                     'resource_id': self.data['resource_id'],

@@ -35,7 +35,7 @@ class TestDatastoreInfo(DatastoreFunctionalTestBase):
                 {'from': 'Brazil', 'to': 'Italy', 'num': 22}
             ],
         }
-        result = helpers.call_action('datastore_create', **data)
+        result = helpers.call_action('timeseries_create', **data)
 
         info = helpers.call_action('datastore_info', id=resource['id'])
 
@@ -62,15 +62,15 @@ class TestDatastoreInfo(DatastoreFunctionalTestBase):
 
         # check we built all the urls ok
         expected_urls = (
-            'http://test.ckan.net/api/3/action/datastore_create',
-            'http://test.ckan.net/api/3/action/datastore_upsert',
-            '<code>http://test.ckan.net/api/3/action/datastore_search',
-            'http://test.ckan.net/api/3/action/datastore_search_sql',
-            'http://test.ckan.net/api/3/action/datastore_search?resource_id=588dfa82-760c-45a2-b78a-e3bc314a4a9b&amp;limit=5',
-            'http://test.ckan.net/api/3/action/datastore_search?q=jones&amp;resource_id=588dfa82-760c-45a2-b78a-e3bc314a4a9b',
-            'http://test.ckan.net/api/3/action/datastore_search_sql?sql=SELECT * from &#34;588dfa82-760c-45a2-b78a-e3bc314a4a9b&#34; WHERE title LIKE &#39;jones&#39;',
-            "url: 'http://test.ckan.net/api/3/action/datastore_search'",
-            "http://test.ckan.net/api/3/action/datastore_search?resource_id=588dfa82-760c-45a2-b78a-e3bc314a4a9b&amp;limit=5&amp;q=title:jones",
+            'http://test.ckan.net/api/3/action/timeseries_create',
+            'http://test.ckan.net/api/3/action/timeseries_upsert',
+            '<code>http://test.ckan.net/api/3/action/timeseries_search',
+            'http://test.ckan.net/api/3/action/timeseries_search_sql',
+            'http://test.ckan.net/api/3/action/timeseries_search?resource_id=588dfa82-760c-45a2-b78a-e3bc314a4a9b&amp;limit=5',
+            'http://test.ckan.net/api/3/action/timeseries_search?q=jones&amp;resource_id=588dfa82-760c-45a2-b78a-e3bc314a4a9b',
+            'http://test.ckan.net/api/3/action/timeseries_search_sql?sql=SELECT * from &#34;588dfa82-760c-45a2-b78a-e3bc314a4a9b&#34; WHERE title LIKE &#39;jones&#39;',
+            "url: 'http://test.ckan.net/api/3/action/timeseries_search'",
+            "http://test.ckan.net/api/3/action/timeseries_search?resource_id=588dfa82-760c-45a2-b78a-e3bc314a4a9b&amp;limit=5&amp;q=title:jones",
         )
         for url in expected_urls:
             assert url in page, url

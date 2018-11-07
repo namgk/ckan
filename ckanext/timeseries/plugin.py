@@ -37,24 +37,24 @@ class DatastorePlugin(p.SingletonPlugin):
     p.implements(p.IResourceController, inherit=True)
     p.implements(p.ITemplateHelpers)
     p.implements(p.IForkObserver, inherit=True)
-    p.implements(interfaces.IDatastore, inherit=True)
-    p.implements(interfaces.IDatastoreBackend, inherit=True)
+    p.implements(interfaces.ITimeseries, inherit=True)
+    p.implements(interfaces.ITimeseriesBackend, inherit=True)
 
     resource_show_action = None
 
     def __new__(cls, *args, **kwargs):
-        idatastore_extensions = p.PluginImplementations(interfaces.IDatastore)
+        idatastore_extensions = p.PluginImplementations(interfaces.ITimeseries)
         idatastore_extensions = idatastore_extensions.extensions()
 
         if idatastore_extensions and idatastore_extensions[0].__class__ != cls:
-            msg = ('The "datastore" plugin must be the first IDatastore '
+            msg = ('The "datastore" plugin must be the first ITimeseries '
                    'plugin loaded. Change the order it is loaded in '
                    '"ckan.plugins" in your CKAN .ini file and try again.')
             raise DatastoreException(msg)
 
         return super(cls, cls).__new__(cls, *args, **kwargs)
 
-    # IDatastoreBackend
+    # ITimeseriesBackend
 
     def register_backends(self):
         return {
@@ -78,15 +78,16 @@ class DatastorePlugin(p.SingletonPlugin):
     def configure(self, config):
         self.config = config
         self.backend.configure(config)
+        self.backend._create_alias_table()
 
     # IActions
 
     def get_actions(self):
         actions = {
-            'datastore_create': action.datastore_create,
-            'datastore_upsert': action.datastore_upsert,
+            'timeseries_create': action.timeseries_create,
+            'timeseries_upsert': action.timeseries_upsert,
             'datastore_delete': action.datastore_delete,
-            'datastore_search': action.datastore_search,
+            'timeseries_search': action.timeseries_search,
             'datastore_info': action.datastore_info,
             'datastore_function_create': action.datastore_function_create,
             'datastore_function_delete': action.datastore_function_delete,
@@ -95,7 +96,7 @@ class DatastorePlugin(p.SingletonPlugin):
         if getattr(self.backend, 'enable_sql_search', False):
             # Only enable search_sql if the config/backend does not disable it
             actions.update({
-                'datastore_search_sql': action.datastore_search_sql,
+                'timeseries_search_sql': action.timeseries_search_sql,
             })
         return actions
 
@@ -103,12 +104,13 @@ class DatastorePlugin(p.SingletonPlugin):
 
     def get_auth_functions(self):
         return {
-            'datastore_create': auth.datastore_create,
-            'datastore_upsert': auth.datastore_upsert,
+            'timeseries_create': auth.timeseries_create,
+            'timeseries_upsert': auth.timeseries_upsert,
             'datastore_delete': auth.datastore_delete,
             'datastore_info': auth.datastore_info,
-            'datastore_search': auth.datastore_search,
-            'datastore_search_sql': auth.datastore_search_sql,
+            'datastore_info': auth.datastore_info,
+            'timeseries_search': auth.timeseries_search,
+            'timeseries_search_sql': auth.timeseries_search_sql,
             'datastore_change_permissions': auth.datastore_change_permissions,
             'datastore_function_create': auth.datastore_function_create,
             'datastore_function_delete': auth.datastore_function_delete,
@@ -164,7 +166,7 @@ class DatastorePlugin(p.SingletonPlugin):
             res_query.filter_by(id=res.id).update(
                 {'extras': res.extras}, synchronize_session=False)
 
-    # IDatastore
+    # ITimeseries
 
     def datastore_validate(self, context, data_dict, fields_types):
         column_names = fields_types.keys()
@@ -207,7 +209,6 @@ class DatastorePlugin(p.SingletonPlugin):
             invalid_clauses = [
                 c for c in sort_clauses
                 if not _parse_sort_clause(
-                    c, fields_types
                 )
             ]
             data_dict['sort'] = invalid_clauses
@@ -227,6 +228,18 @@ class DatastorePlugin(p.SingletonPlugin):
             if is_positive_int:
                 del data_dict['offset']
 
+        # Nam Giang
+        fromtime = data_dict.get('fromtime')
+        if fromtime:
+            if isinstance(fromtime, basestring):
+                del data_dict['fromtime']
+
+        totime = data_dict.get('totime')
+        if totime:
+            if isinstance(totime, basestring):
+                del data_dict['totime']
+        # end Nam Giang
+
         return data_dict
 
     def datastore_delete(self, context, data_dict, fields_types, query_dict):
@@ -235,8 +248,8 @@ class DatastorePlugin(p.SingletonPlugin):
             query_dict = hook(context, data_dict, fields_types, query_dict)
         return query_dict
 
-    def datastore_search(self, context, data_dict, fields_types, query_dict):
-        hook = getattr(self.backend, 'datastore_search', None)
+    def timeseries_search(self, context, data_dict, fields_types, query_dict):
+        hook = getattr(self.backend, 'timeseries_search', None)
         if hook:
             query_dict = hook(context, data_dict, fields_types, query_dict)
         return query_dict

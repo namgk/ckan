@@ -5,13 +5,40 @@ import logging
 
 import paste.deploy.converters as converters
 import sqlparse
-
+import datetime
+import pytz
+import iso8601
+import re
+from ckan.common import config
 from six import string_types
 
 from ckan.plugins.toolkit import get_action, ObjectNotFound, NotAuthorized
 
 log = logging.getLogger(__name__)
 
+class Timeseries_query(object):
+    def __init__(self, s):
+        self.d = 0
+        self.h = 0
+        self.m = 0
+        self.s = 0
+        self.elm_pattern = re.compile('[0-9]+[d|h|m|s]')
+        self.parse(s)
+
+    def text(self):
+        return (self.d, self.h, self.m, self.s)
+
+    def parse(self,s):
+        # str: 1d,2h,3m,4s
+        query = s.split(',')
+        for elm in query:
+            print(elm)
+            if not self.elm_pattern.match(elm):
+                raise ValueError('Cannot parse query: {}'.format(elm))
+            
+            for e in ['d', 'h', 'm', 's']:
+                if e in elm:
+                    setattr(self, e, int(elm.split(e)[0]))
 
 def is_single_statement(sql):
     '''Returns True if received SQL string contains at most one statement'''
@@ -156,7 +183,7 @@ def datastore_dictionary(resource_id):
     """
     try:
         return [
-            f for f in get_action('datastore_search')(
+            f for f in get_action('timeseries_search')(
                 None, {
                     u'resource_id': resource_id,
                     u'limit': 0,
@@ -164,3 +191,42 @@ def datastore_dictionary(resource_id):
             if not f['id'].startswith(u'_')]
     except (ObjectNotFound, NotAuthorized):
         return []
+
+def dict_rm_autogen_timestamp(dict):
+    if u'_autogen_timestamp' in dict:
+        dict.pop(u'_autogen_timestamp', None)
+    return dict
+
+def remove_autogen(result):
+    if 'fields' in result:
+        result['fields'] = [f for f in result['fields'] if f.get('id') != u'_autogen_timestamp']
+    if 'records' in result:
+        result['records'] = map(dict_rm_autogen_timestamp, result['records'])
+
+def timestamp_from_string(str):
+    print(str)
+    if (str.startswith( 'last ', 0, 5 )):
+        # sample queries: 1m; 1m,2s; 1d,2h,3m,4s
+        query = Timeseries_query(str.split('last ')[1])
+        diff = datetime.timedelta(seconds=query.s, minutes=query.m, hours=query.h, days=query.d)
+        return utcnow() - diff
+        
+    return iso8601.parse_date(str)
+        
+def string_from_timestamp(timestamp):
+    return timestamp.isoformat()
+
+def utcnow():
+    return datetime.datetime.now(tz=pytz.utc)
+
+def get_max_resource_size():
+    # get allowed table size configuration, default to 500MB
+    # the number in configuration file is in MB
+    try:
+        max_resource_size = int(config.get('ckan.timeseries.max_resource_size'))
+    except ValueError as err:
+        max_resource_size = 500 # in MB
+    except TypeError as err:
+        max_resource_size = 500 # in MB
+        
+    return max_resource_size * 1000 * 1000

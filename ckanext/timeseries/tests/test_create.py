@@ -31,7 +31,7 @@ class TestDatastoreCreateNewTests(DatastoreFunctionalTestBase):
                 'package_id': package['id']
             },
         }
-        result = helpers.call_action('datastore_create', **data)
+        result = helpers.call_action('timeseries_create', **data)
         resource_id = result['resource_id']
         index_names = self._get_index_names(resource_id)
         assert resource_id + '_pkey' in index_names
@@ -44,7 +44,7 @@ class TestDatastoreCreateNewTests(DatastoreFunctionalTestBase):
                 'package_id': package['id']
             },
         }
-        result = helpers.call_action('datastore_create', **data)
+        result = helpers.call_action('timeseries_create', **data)
         resource_id = result['resource_id']
         resource = helpers.call_action('resource_show', id=resource_id)
         url = resource['url']
@@ -62,9 +62,54 @@ class TestDatastoreCreateNewTests(DatastoreFunctionalTestBase):
                        {'id': 'author', 'type': 'text'}],
             'indexes': ['author']
         }
-        result = helpers.call_action('datastore_create', **data)
+        result = helpers.call_action('timeseries_create', **data)
         resource_id = result['resource_id']
         assert self._has_index_on_field(resource_id, '"author"')
+
+    def test_create_creates_index_on_autogen_timestamp(self):
+        package = factories.Dataset()
+        data = {
+            'resource': {
+                'boo%k': 'crime',
+                'author': ['tolstoy', 'dostoevsky'],
+                'package_id': package['id']
+            },
+            'fields': [{'id': 'book', 'type': 'text'},
+                       {'id': 'author', 'type': 'text'}]
+        }
+        result = helpers.call_action('timeseries_create', **data)
+        resource_id = result['resource_id']
+        assert self._has_index_on_field(resource_id, u'_autogen_timestamp')
+
+        data = {
+            'resource': {
+                'boo%k': 'crime',
+                'author': ['tolstoy', 'dostoevsky'],
+                'package_id': package['id']
+            },
+            'fields': [{'id': 'book', 'type': 'text'},
+                       {'id': 'author', 'type': 'text'}],
+            'indexes': 'book'
+        }
+        result = helpers.call_action('timeseries_create', **data)
+        resource_id = result['resource_id']
+        assert self._has_index_on_field(resource_id, '"book"')
+        assert self._has_index_on_field(resource_id, u'_autogen_timestamp')
+
+        data = {
+            'resource': {
+                'boo%k': 'crime',
+                'author': ['tolstoy', 'dostoevsky'],
+                'package_id': package['id']
+            },
+            'fields': [{'id': 'book', 'type': 'text'},
+                       {'id': 'author', 'type': 'text'}],
+            'indexes': ['author']
+        }
+        result = helpers.call_action('timeseries_create', **data)
+        resource_id = result['resource_id']
+        assert self._has_index_on_field(resource_id, '"author"')
+        assert self._has_index_on_field(resource_id, u'_autogen_timestamp')
 
     def test_create_adds_index_on_full_text_search_when_creating_other_indexes(self):
         package = factories.Dataset()
@@ -78,7 +123,7 @@ class TestDatastoreCreateNewTests(DatastoreFunctionalTestBase):
                        {'id': 'author', 'type': 'text'}],
             'indexes': ['author']
         }
-        result = helpers.call_action('datastore_create', **data)
+        result = helpers.call_action('timeseries_create', **data)
         resource_id = result['resource_id']
         assert self._has_index_on_field(resource_id, '"_full_text"')
 
@@ -93,7 +138,7 @@ class TestDatastoreCreateNewTests(DatastoreFunctionalTestBase):
             'fields': [{'id': 'book', 'type': 'text'},
                        {'id': 'author', 'type': 'text'}],
         }
-        result = helpers.call_action('datastore_create', **data)
+        result = helpers.call_action('timeseries_create', **data)
         resource_id = result['resource_id']
         assert self._has_index_on_field(resource_id, '"_full_text"')
 
@@ -109,7 +154,7 @@ class TestDatastoreCreateNewTests(DatastoreFunctionalTestBase):
                        {'id': 'author', 'type': 'text'}],
             'lang': 'english',
         }
-        result = helpers.call_action('datastore_create', **data)
+        result = helpers.call_action('timeseries_create', **data)
         resource_id = result['resource_id']
         assert self._has_index_on_field(resource_id,
                                         "to_tsvector('english', \"boo%k\")")
@@ -125,7 +170,7 @@ class TestDatastoreCreateNewTests(DatastoreFunctionalTestBase):
                 {'book': 'annakarenina', 'author': 'tolstoy'}
             ]
         }
-        result = helpers.call_action('datastore_create', **data)
+        result = helpers.call_action('timeseries_create', **data)
         previous_index_names = self._get_index_names(resource['id'])
         data = {
             'resource_id': resource['id'],
@@ -134,7 +179,7 @@ class TestDatastoreCreateNewTests(DatastoreFunctionalTestBase):
                 {'book': 'warandpeace', 'author': 'tolstoy'}
             ]
         }
-        result = helpers.call_action('datastore_create', **data)
+        result = helpers.call_action('timeseries_create', **data)
         current_index_names = self._get_index_names(resource['id'])
         assert_equal(previous_index_names, current_index_names)
 
@@ -150,7 +195,7 @@ class TestDatastoreCreateNewTests(DatastoreFunctionalTestBase):
             'fields': [{'id': 'book', 'type': 'text'},
                        {'id': 'book', 'type': 'text'}],
         }
-        result = helpers.call_action('datastore_create', **data)
+        result = helpers.call_action('timeseries_create', **data)
 
 
     def _has_index_on_field(self, resource_id, field):
@@ -201,7 +246,7 @@ class TestDatastoreCreateNewTests(DatastoreFunctionalTestBase):
             ]
         }
 
-        helpers.call_action('datastore_create', **data)
+        helpers.call_action('timeseries_create', **data)
 
         resource = helpers.call_action('resource_show', id=resource['id'])
 
@@ -220,7 +265,7 @@ class TestDatastoreCreateNewTests(DatastoreFunctionalTestBase):
             ]
         }
 
-        helpers.call_action('datastore_create', **data)
+        helpers.call_action('timeseries_create', **data)
 
         helpers.call_action('datastore_delete', resource_id=resource['id'],
                             force=True)
@@ -242,7 +287,7 @@ class TestDatastoreCreateNewTests(DatastoreFunctionalTestBase):
                 'type': 'text'
             }]
         }
-        result = helpers.call_action('datastore_create', **data)
+        result = helpers.call_action('timeseries_create', **data)
 
 
 class TestDatastoreCreate(DatastoreLegacyTestBase):
@@ -267,7 +312,7 @@ class TestDatastoreCreate(DatastoreLegacyTestBase):
             'resource_id': resource.id
         }
         postparams = '%s=1' % json.dumps(data)
-        res = self.app.post('/api/action/datastore_create', params=postparams,
+        res = self.app.post('/api/action/timeseries_create', params=postparams,
                             status=403)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is False
@@ -275,7 +320,7 @@ class TestDatastoreCreate(DatastoreLegacyTestBase):
     def test_create_empty_fails(self):
         postparams = '%s=1' % json.dumps({})
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_create', params=postparams,
+        res = self.app.post('/api/action/timeseries_create', params=postparams,
                             extra_environ=auth, status=409)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is False
@@ -290,7 +335,7 @@ class TestDatastoreCreate(DatastoreLegacyTestBase):
         }
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_create', params=postparams,
+        res = self.app.post('/api/action/timeseries_create', params=postparams,
                             extra_environ=auth, status=409)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is False
@@ -303,7 +348,7 @@ class TestDatastoreCreate(DatastoreLegacyTestBase):
         }
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_create', params=postparams,
+        res = self.app.post('/api/action/timeseries_create', params=postparams,
                             extra_environ=auth, status=409)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is False
@@ -316,7 +361,7 @@ class TestDatastoreCreate(DatastoreLegacyTestBase):
         }
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_create', params=postparams,
+        res = self.app.post('/api/action/timeseries_create', params=postparams,
                             extra_environ=auth, status=200)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is True
@@ -329,7 +374,7 @@ class TestDatastoreCreate(DatastoreLegacyTestBase):
         }
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_create', params=postparams,
+        res = self.app.post('/api/action/timeseries_create', params=postparams,
                             extra_environ=auth, status=409)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is False
@@ -342,7 +387,7 @@ class TestDatastoreCreate(DatastoreLegacyTestBase):
         }
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_create', params=postparams,
+        res = self.app.post('/api/action/timeseries_create', params=postparams,
                             extra_environ=auth, status=409)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is False
@@ -356,7 +401,7 @@ class TestDatastoreCreate(DatastoreLegacyTestBase):
         }
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_create', params=postparams,
+        res = self.app.post('/api/action/timeseries_create', params=postparams,
                             extra_environ=auth, status=409)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is False
@@ -374,7 +419,7 @@ class TestDatastoreCreate(DatastoreLegacyTestBase):
                            {'id': field_name, 'type': 'text'}]
             }
             postparams = '%s=1' % json.dumps(data)
-            res = self.app.post('/api/action/datastore_create', params=postparams,
+            res = self.app.post('/api/action/timeseries_create', params=postparams,
                                 extra_environ=auth, status=409)
             res_dict = json.loads(res.body)
             assert res_dict['success'] is False
@@ -390,7 +435,7 @@ class TestDatastoreCreate(DatastoreLegacyTestBase):
         }
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_create', params=postparams,
+        res = self.app.post('/api/action/timeseries_create', params=postparams,
                             extra_environ=auth, status=409)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is False
@@ -405,7 +450,7 @@ class TestDatastoreCreate(DatastoreLegacyTestBase):
         }
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_create', params=postparams,
+        res = self.app.post('/api/action/timeseries_create', params=postparams,
                             extra_environ=auth, status=409)
         res_dict = json.loads(res.body)
 
@@ -423,7 +468,7 @@ class TestDatastoreCreate(DatastoreLegacyTestBase):
         }
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_create', params=postparams,
+        res = self.app.post('/api/action/timeseries_create', params=postparams,
                             extra_environ=auth, status=409)
         res_dict = json.loads(res.body)
 
@@ -440,7 +485,7 @@ class TestDatastoreCreate(DatastoreLegacyTestBase):
         }
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_create', params=postparams,
+        res = self.app.post('/api/action/timeseries_create', params=postparams,
                             extra_environ=auth, status=409)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is False
@@ -455,7 +500,7 @@ class TestDatastoreCreate(DatastoreLegacyTestBase):
         }
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_create', params=postparams,
+        res = self.app.post('/api/action/timeseries_create', params=postparams,
                             extra_environ=auth, status=409)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is False
@@ -470,7 +515,7 @@ class TestDatastoreCreate(DatastoreLegacyTestBase):
         }
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_create', params=postparams,
+        res = self.app.post('/api/action/timeseries_create', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is True, res_dict
@@ -483,7 +528,7 @@ class TestDatastoreCreate(DatastoreLegacyTestBase):
         }
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_create', params=postparams,
+        res = self.app.post('/api/action/timeseries_create', params=postparams,
                             extra_environ=auth, status=409)
         res_dict = json.loads(res.body)
         assert res_dict['success'] is False, res_dict
@@ -511,7 +556,7 @@ class TestDatastoreCreate(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_create', params=postparams,
+        res = self.app.post('/api/action/timeseries_create', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
 
@@ -571,7 +616,7 @@ class TestDatastoreCreate(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data2)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_create', params=postparams,
+        res = self.app.post('/api/action/timeseries_create', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
 
@@ -606,7 +651,7 @@ class TestDatastoreCreate(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data3)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_create', params=postparams,
+        res = self.app.post('/api/action/timeseries_create', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
 
@@ -635,7 +680,7 @@ class TestDatastoreCreate(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data4)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_create', params=postparams,
+        res = self.app.post('/api/action/timeseries_create', params=postparams,
                             extra_environ=auth, status=409)
         res_dict = json.loads(res.body)
 
@@ -652,7 +697,7 @@ class TestDatastoreCreate(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data5)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_create', params=postparams,
+        res = self.app.post('/api/action/timeseries_create', params=postparams,
                             extra_environ=auth, expect_errors=True)
         res_dict = json.loads(res.body)
 
@@ -686,7 +731,7 @@ class TestDatastoreCreate(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data6)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_create', params=postparams,
+        res = self.app.post('/api/action/timeseries_create', params=postparams,
                             extra_environ=auth, expect_errors=True)
         res_dict = json.loads(res.body)
 
@@ -707,7 +752,7 @@ class TestDatastoreCreate(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data7)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_create', params=postparams,
+        res = self.app.post('/api/action/timeseries_create', params=postparams,
                             extra_environ=auth, expect_errors=True)
         res_dict = json.loads(res.body)
 
@@ -722,7 +767,7 @@ class TestDatastoreCreate(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data8)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_create', params=postparams,
+        res = self.app.post('/api/action/timeseries_create', params=postparams,
                             extra_environ=auth, expect_errors=True)
         res_dict = json.loads(res.body)
 
@@ -745,7 +790,7 @@ class TestDatastoreCreate(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.normal_user.apikey)}
-        res = self.app.post('/api/action/datastore_create', params=postparams,
+        res = self.app.post('/api/action/timeseries_create', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
 
@@ -789,7 +834,7 @@ class TestDatastoreCreate(DatastoreLegacyTestBase):
         }
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_create', params=postparams,
+        res = self.app.post('/api/action/timeseries_create', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
 
@@ -798,7 +843,9 @@ class TestDatastoreCreate(DatastoreLegacyTestBase):
 
         types = [db._pg_types[field[1]] for field in results.cursor.description]
 
-        assert types == [u'int4', u'tsvector', u'nested', u'int4', u'text', u'timestamp', u'float8'], types
+        print types
+
+        assert types == [u'int4', u'tsvector', u'timestamptz', u'nested', u'int4', u'text', u'timestamp', u'float8'], types
 
         assert results.rowcount == 3
         for i, row in enumerate(results):
@@ -826,7 +873,7 @@ class TestDatastoreCreate(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_create', params=postparams,
+        res = self.app.post('/api/action/timeseries_create', params=postparams,
                             extra_environ=auth)
         res_dict = json.loads(res.body)
 
@@ -838,6 +885,7 @@ class TestDatastoreCreate(DatastoreLegacyTestBase):
 
         assert types == [u'int4',  # id
                          u'tsvector',  # fulltext
+                         u'timestamptz', # autogen_timestamp
                          u'nested',  # author
                          u'int4',  # count
                          u'text',  # book
@@ -867,14 +915,14 @@ class TestDatastoreCreate(DatastoreLegacyTestBase):
 
         postparams = '%s=1' % json.dumps(data)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_create', params=postparams,
+        res = self.app.post('/api/action/timeseries_create', params=postparams,
                             extra_environ=auth, status=409)
         res_dict = json.loads(res.body)
 
         assert res_dict['success'] is False
 
-    def test_datastore_create_with_invalid_data_value(self):
-        """datastore_create() should return an error for invalid data."""
+    def test_timeseries_create_with_invalid_data_value(self):
+        """timeseries_create() should return an error for invalid data."""
         resource = factories.Resource(url_type="datastore")
         data_dict = {
             "resource_id": resource["id"],
@@ -893,7 +941,7 @@ class TestDatastoreCreate(DatastoreLegacyTestBase):
         }
         postparams = '%s=1' % json.dumps(data_dict)
         auth = {'Authorization': str(self.sysadmin_user.apikey)}
-        res = self.app.post('/api/action/datastore_create', params=postparams,
+        res = self.app.post('/api/action/timeseries_create', params=postparams,
                             extra_environ=auth, status=409)
         res_dict = json.loads(res.body)
 
@@ -968,7 +1016,7 @@ class TestDatastoreCreateTriggers(DatastoreFunctionalTestBase):
             app = self._get_test_app()
             with app.flask_app.test_request_context():
                 helpers.call_action(
-                    u'datastore_create',
+                    u'timeseries_create',
                     resource={u'package_id': ds['id']},
                     fields=[{u'id': u'spam', u'type': u'text'}],
                     records=[{u'spam': u'SPAM'}, {u'spam': u'EGGS'}],
@@ -997,14 +1045,14 @@ class TestDatastoreCreateTriggers(DatastoreFunctionalTestBase):
         app = self._get_test_app()
         with app.flask_app.test_request_context():
             res = helpers.call_action(
-                u'datastore_create',
+                u'timeseries_create',
                 resource={u'package_id': ds['id']},
                 fields=[{u'id': u'spam', u'type': u'text'}],
                 records=[{u'spam': u'SPAM'}, {u'spam': u'EGGS'}],
                 triggers=[{u'function': u'spamify_trigger'}])
         assert_equal(
             helpers.call_action(
-                u'datastore_search',
+                u'timeseries_search',
                 fields=[u'spam'],
                 resource_id=res['resource_id'])['records'],
             [
@@ -1027,18 +1075,18 @@ class TestDatastoreCreateTriggers(DatastoreFunctionalTestBase):
         app = self._get_test_app()
         with app.flask_app.test_request_context():
             res = helpers.call_action(
-                u'datastore_create',
+                u'timeseries_create',
                 resource={u'package_id': ds['id']},
                 fields=[{u'id': u'spam', u'type': u'text'}],
                 triggers=[{u'function': u'more_spam_trigger'}])
             helpers.call_action(
-                u'datastore_upsert',
+                u'timeseries_upsert',
                 method=u'insert',
                 resource_id=res['resource_id'],
                 records=[{u'spam': u'BEANS'}, {u'spam': u'SPAM'}])
         assert_equal(
             helpers.call_action(
-                u'datastore_search',
+                u'timeseries_search',
                 fields=[u'spam'],
                 resource_id=res['resource_id'])['records'],
             [
@@ -1063,7 +1111,7 @@ class TestDatastoreCreateTriggers(DatastoreFunctionalTestBase):
             app = self._get_test_app()
             with app.flask_app.test_request_context():
                 helpers.call_action(
-                    u'datastore_create',
+                    u'timeseries_create',
                     resource={u'package_id': ds['id']},
                     fields=[{u'id': u'spam', u'type': u'text'}],
                     records=[{u'spam': u'spam'}, {u'spam': u'EGGS'}],
@@ -1093,13 +1141,13 @@ class TestDatastoreCreateTriggers(DatastoreFunctionalTestBase):
         app = self._get_test_app()
         with app.flask_app.test_request_context():
             res = helpers.call_action(
-                u'datastore_create',
+                u'timeseries_create',
                 resource={u'package_id': ds['id']},
                 fields=[{u'id': u'spam', u'type': u'text'}],
                 triggers=[{u'function': u'spamonly_trigger'}])
             try:
                 helpers.call_action(
-                    u'datastore_upsert',
+                    u'timeseries_upsert',
                     method=u'insert',
                     resource_id=res['resource_id'],
                     records=[{u'spam': u'spam'}, {u'spam': u'BEANS'}])
